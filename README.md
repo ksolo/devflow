@@ -19,7 +19,7 @@ Under the hood, requirements are treated like database migrations: monotonically
 ## Install
 
 ```bash
-npx skills add ksolos/dev-flow
+npx skills add ksolo/dev-flow
 ```
 
 This works on every agent supported by the [`skills` CLI](https://skills.sh):
