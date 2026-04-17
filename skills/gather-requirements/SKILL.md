@@ -92,7 +92,7 @@ load-bearing — the dry-run reads these deltas.
 
 Follow [`references/conflict-detection.md`](references/conflict-detection.md) to execute:
 
-- **Tier 1 (structural):** dangling refs, duplicate IDs, touching `@locked` scenarios,
+- **Tier 1 (structural):** dangling refs, duplicate IDs, touching `locked: true` scenarios,
   duplicate acceptance-criterion slugs with different outcomes.
 - **Tier 2 (declarative state):** apply the `deltas:` block to a copy of `.dev-flow/state.yml`
   and check for capability/actor/rule consistency + numeric/enum budget contradictions.

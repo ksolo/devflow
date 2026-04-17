@@ -12,7 +12,7 @@ Tiers 3 (LLM semantic) and 4 (BDD regression) are **not** in v1.
 - `.dev-flow/state.yml` (current accumulated contract).
 - `.dev-flow/log.jsonl` (ordered acceptance log).
 - All accepted requirement files (reachable via the log).
-- All `.feature` files in the repo (for `@locked` scenario checks).
+- All `scenarios.yml` files in the repo (for `locked: true` scenario checks).
 
 ## Algorithm
 
@@ -74,18 +74,21 @@ references like `REQ-XXXX`, `DEC-XXXX`, or capability/actor/rule ids:
 
 ### T1.d — locked scenarios
 
-For each existing `.feature` file in the repo, load scenarios tagged `@locked`.
+For each existing `scenarios.yml` file in the repo, load scenario entries with
+`locked: true`.
 
-- If the draft `supersedes:` a REQ whose acceptance criteria are referenced by a `@locked`
-  scenario (`@req:REQ-XXXX` tag), the supersede is a **conflict**. The engineer must either
-  unlock the scenario via a new `gather-requirements` pass or narrow the draft.
+- If the draft `supersedes:` a REQ whose acceptance criteria are referenced by a locked
+  scenario (via `tags.req: [REQ-XXXX]`), the supersede is a **conflict**. The engineer
+  must either unlock the scenario via a new `gather-requirements` pass or narrow the
+  draft.
 
 ### T1.e — duplicate acceptance-criterion slugs
 
 Each acceptance criterion has an implicit slug derived from its text (e.g. first 6 words
 kebab-cased). If the draft's acceptance criteria produce a slug that collides with any
-`@req:REQ-XXXX` tag on a scenario in another feature — flag as a likely duplicated
-criterion. This is heuristic (warning-level inside Tier 1), not a hard failure.
+`tags.req: [REQ-XXXX]` link on a scenario in another feature — flag as a likely
+duplicated criterion. This is heuristic (warning-level inside Tier 1), not a hard
+failure.
 
 ## Tier 2 — declarative state checks
 
@@ -146,8 +149,9 @@ Tier 1 failures (2):
     Cannot supersede something already superseded. Fix: target REQ-0031 instead.
 
   T1.d locked scenarios:
-    docs/features/auth/login.feature has @locked @req:REQ-0017 on 'Valid login'.
-    Superseding REQ-0017 would invalidate a locked scenario.
+    docs/features/auth/scenarios.yml has locked: true on id=valid-login
+    (tags.req: [REQ-0017]). Superseding REQ-0017 would invalidate a locked
+    scenario.
 
 Tier 2 failures (1):
   T2.c budget conflict:

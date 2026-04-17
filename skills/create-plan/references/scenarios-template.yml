@@ -1,0 +1,146 @@
+# ============================================================================
+# scenarios-template.yml — dev-flow scenario catalog (v1)
+#
+# Copy to docs/features/<feature-slug>/scenarios.yml and fill in. Each scenario
+# is a specification of expected behavior; one or more supporting tests (unit,
+# integration, contract, load, smoke, e2e) prove it.
+#
+# See skills/create-plan/references/scenarios-schema.md for the full schema
+# and tag vocabulary. Everything below demonstrates the v1 conventions.
+# ============================================================================
+
+schema: dev-flow.scenarios/v1
+feature: url-shortener
+requirement: REQ-0042
+
+scenarios:
+  # ------------------------------------------------------------------------
+  # Plan step 3 — happy path (functional, integration + unit)
+  # ------------------------------------------------------------------------
+  - id: valid-https-returns-201
+    title: Valid HTTPS URL returns a 201 with a 7-char short code
+    tags:
+      req: [REQ-0042]
+      plan_step: 3
+      status: spec-only            # spec-only | tests-written | passing | flaky | deferred
+      decision: [DEC-0004]
+      env: [local, ci]
+    pause_after: true              # Phase 3 stops after this scenario is green
+    description: |
+      Given the store is empty
+      When a client submits "https://example.com/articles/42" to shorten
+      Then the response status is 201
+      And the response body contains a "code" of length 7
+      And the code matches /^[A-Za-z0-9]{7}$/
+    tests:
+      - path: tests/integration/shorten.test.ts
+        name: "POST /shorten happy path returns 201 with 7-char code"
+        kind: integration
+      - path: tests/unit/code-generator.test.ts
+        name: "generates 7-char base62 code"
+        kind: unit
+
+  # ------------------------------------------------------------------------
+  # Plan step 4 — validation / security (outline-style via examples)
+  # ------------------------------------------------------------------------
+  - id: disallowed-schemes-rejected
+    title: Disallowed schemes are rejected with 400 invalid_url
+    tags:
+      req: [REQ-0042]
+      plan_step: 4
+      status: spec-only
+      decision: [DEC-0004]
+    description: |
+      When a client submits a URL with a disallowed scheme
+      Then the response status is 400
+      And the response body contains error.code = "invalid_url"
+    examples:                      # Scenario-Outline equivalent
+      - { url: "javascript:alert(1)" }
+      - { url: "data:text/html,<script>alert(1)</script>" }
+      - { url: "file:///etc/passwd" }
+    tests:
+      - path: tests/unit/validator.test.ts
+        name: "rejects non-http(s) schemes"
+        kind: unit
+      - path: tests/integration/shorten.test.ts
+        name: "POST /shorten rejects disallowed schemes"
+        kind: integration
+
+  # ------------------------------------------------------------------------
+  # Plan step 5 — redirect endpoint (two scenarios share a plan step)
+  # ------------------------------------------------------------------------
+  - id: redirect-known-code-302
+    title: Visiting a valid short code responds 302 to the original URL
+    tags:
+      req: [REQ-0042]
+      plan_step: 5
+      status: spec-only
+    description: |
+      Given a short code "abc1234" exists for "https://example.com/articles/42"
+      When a visitor GETs "/abc1234"
+      Then the response status is 302
+      And the "Location" header is "https://example.com/articles/42"
+    tests:
+      - path: tests/integration/redirect.test.ts
+        name: "GET /:code redirects to original URL"
+        kind: integration
+
+  - id: redirect-unknown-code-404
+    title: Visiting an unknown short code responds 404
+    tags:
+      req: [REQ-0042]
+      plan_step: 5
+      status: spec-only
+    pause_after: true
+    description: |
+      When a visitor GETs "/doesntexist"
+      Then the response status is 404
+      And the response body contains error.code = "not_found"
+    tests:
+      - path: tests/integration/redirect.test.ts
+        name: "GET /:code with unknown code returns 404"
+        kind: integration
+
+  # ------------------------------------------------------------------------
+  # Plan step 7 — perf + observability (load test kind)
+  # ------------------------------------------------------------------------
+  - id: redirect-perf-p95-150ms
+    title: Redirect completes at p95 < 150ms under 100 rps
+    tags:
+      req: [REQ-0042]
+      plan_step: 7
+      status: spec-only
+      env: [ci]
+      platform: [linux]
+    pause_after: true
+    assumes: [autocannon-available]
+    description: |
+      Given the service is warmed up for 30 seconds
+      And 1000 short codes exist in the store
+      When autocannon runs against "/" at 100 rps for 60 seconds
+      Then the reported p95 latency is under 150 milliseconds
+      And no request returns a 5xx response
+    tests:
+      - path: tests/load/redirect.load.ts
+        name: "redirect p95 under 150ms at 100 rps"
+        kind: load
+
+  # ------------------------------------------------------------------------
+  # Example of a LOCKED scenario. `locked: true` is set ONLY by the engineer
+  # after explicit approval. Agents never self-apply it. `review-changes`
+  # hard-fails if a locked scenario is modified without a gather-requirements
+  # entry logged since the lock was applied.
+  # ------------------------------------------------------------------------
+  # - id: example-locked-scenario
+  #   title: "[EXAMPLE] engineer-approved locked scenario"
+  #   tags:
+  #     req: [REQ-0042]
+  #     plan_step: 3
+  #     status: passing
+  #   locked: true
+  #   description: |
+  #     ...
+  #   tests:
+  #     - path: tests/integration/whatever.test.ts
+  #       name: "whatever"
+  #       kind: integration

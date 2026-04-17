@@ -11,7 +11,7 @@ Migrations-for-requirements only works if the acceptance log is a linear history
 Once you allow in-place edits, you lose:
 
 - **Determinism.** `state.yml` can no longer be rebuilt from the log.
-- **Traceability.** BDD scenarios tagged `@req:REQ-0017` would silently mean something
+- **Traceability.** Scenarios linked via `tags.req: [REQ-0017]` would silently mean something
   different depending on when you read them.
 - **Conflict detection.** Tier 1 reference resolution stops meaning anything if the target
   can shift under you.
@@ -43,7 +43,7 @@ Fix the draft so it no longer conflicts. Examples:
 
 - Loosen a budget so it doesn't tighten a prior one.
 - Rename an id to avoid collision.
-- Narrow scope so a `@locked` scenario is no longer invalidated.
+- Narrow scope so a `locked: true` scenario is no longer invalidated.
 
 Edit the draft, re-run the dry-run. The draft is still `status: draft` — nothing has been
 accepted yet.

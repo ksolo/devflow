@@ -26,8 +26,8 @@ The repo itself is built using the same workflow — it dogfoods its own skills.
    was done and why, and wait for the engineer to review before proceeding.
 
 4. **If the plan conflicts with reality, stop and escalate.** Do not silently work around the
-   plan. Update `plan.md`, `decisions.md`, and any affected `.feature` scenarios first, then
-   resume.
+   plan. Update `plan.md`, `decisions.md`, and any affected entries in `scenarios.yml`
+   first, then resume.
 
 5. **SOLID (subset):** favor Single Responsibility, Open/Closed, and Dependency Inversion in
    any code produced by `implement-step`.
@@ -48,7 +48,7 @@ dev-flow/
 │   ├── finalize-feature/            # Phase 4
 │   └── review-changes/              # Phase 5
 ├── examples/
-│   └── <sample-feature>/            # dogfood artifacts (requirements / plan / .feature)
+│   └── <sample-feature>/            # dogfood artifacts (requirements / plan / scenarios)
 ├── AGENTS.md                        # this file
 ├── CLAUDE.md                        # pointer to AGENTS.md for Claude Code
 ├── README.md                        # human-facing overview + install
@@ -72,7 +72,7 @@ flowchart LR
     user["user kicks off work"] --> devFlow["dev-flow (orchestrator)"]
     devFlow --> req["gather-requirements"]
     req -->|requirements.md accepted| plan["create-plan"]
-    plan -->|plan.md + decisions.md + .feature| impl["implement-step"]
+    plan -->|plan.md + decisions.md + scenarios.yml| impl["implement-step"]
     impl -->|pauses at each commit| user
     impl --> final["finalize-feature"]
     final -->|AGENTS.md updated, tmp cleaned| review["review-changes"]
@@ -97,17 +97,22 @@ phase. The orchestrator hands off; it does not re-implement phase behavior.
 
 The full rules live in [`skills/gather-requirements/references/`](./skills/gather-requirements/references).
 
-## Extended Gherkin (short version)
+## scenarios.yml — behavior catalog (short version)
 
-`.feature` files are valid Gherkin supersets. Extensions live in tags and are guided (warned,
-not enforced). See
-[`skills/create-plan/references/gherkin-extensions.md`](./skills/create-plan/references/gherkin-extensions.md)
-once built. Vocabulary v1:
+Each feature has a `scenarios.yml` file that lists scenarios as structured entries. Each
+entry has a narrative `description`, traceability tags, and — once Phase 3 runs — a
+`tests:` list pointing to one or more tests (unit, integration, contract, load, smoke,
+e2e) in the consumer repo's native test framework. Scenarios are the spec; tests are the
+proof. See
+[`skills/create-plan/references/scenarios-schema.md`](./skills/create-plan/references/scenarios-schema.md).
 
-- **Traceability:** `@req:REQ-0017,REQ-0018`, `@plan-step:3`, `@decision:DEC-0004`, `@feature:<slug>`, `@owner:<team>`
-- **Lifecycle:** `@status:spec-only | step-def-written | passing | flaky | deferred`
-- **Run matrix:** `@env:local,ci`, `@browser:chromium,firefox`, `@platform:linux`
-- **Agent control:** `@locked`, `@pause-after`, `@assumes:<slug>`
+Vocabulary v1 (tags live under `tags:` on each scenario entry):
+
+- **Traceability:** `req: [REQ-0017, REQ-0018]`, `plan_step: 3`, `decision: [DEC-0004]`, `owner: <handle>`
+- **Lifecycle:** `status: spec-only | tests-written | passing | flaky | deferred`
+- **Run matrix:** `env: [local, ci]`, `browser: [chromium, firefox]`, `platform: [linux]`
+
+Scenario-level fields (outside `tags:`): `pause_after`, `assumes`, `locked`, `examples`.
 
 ## Development status
 
@@ -116,7 +121,7 @@ This repo is under active development. The planned step sequence:
 - [x] Step 1: scaffold (this commit)
 - [ ] Step 2: `dev-flow` orchestrator skill
 - [ ] Step 3: `gather-requirements` skill (+ conflict-detection, state-file, supersede-protocol references)
-- [ ] Step 4: `create-plan` skill (+ Gherkin extension references)
+- [ ] Step 4: `create-plan` skill (+ scenarios.yml schema references)
 - [ ] Step 5: `implement-step` skill (+ TDD loop, SOLID, pause-points)
 - [ ] Step 6: `finalize-feature` skill (+ handoff checklist)
 - [ ] Step 7: `review-changes` skill (+ readability / security / BDD-tag / state-drift audits)

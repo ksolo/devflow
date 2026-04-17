@@ -11,7 +11,7 @@ and any other agent that speaks the [Agent Skills spec](https://agentskills.io/s
 1. **Align on requirements** before writing a line of code — conversational Q&A, outputs a committed requirements doc.
 2. **Plan** in commit-sized steps with verification gates, Mermaid diagrams, captured decisions, and BDD scenario skeletons.
 3. **Implement** one step at a time with a TDD inner loop, SOLID discipline (SRP / OCP / DIP), and pause-for-review boundaries.
-4. **Finalize** by updating `AGENTS.md` / `CLAUDE.md`, cleaning up temp scripts, and running the full BDD suite.
+4. **Finalize** by updating `AGENTS.md` / `CLAUDE.md`, cleaning up temp scripts, and running the full test suite with the scenarios-coverage audit.
 5. **Review** the result for readability, maintainability, and security before handoff.
 
 Under the hood, requirements are treated like database migrations: monotonically numbered, **immutable once accepted**, only changeable by superseding. A dry-run detects conflicts with prior requirements before new ones are accepted.
@@ -62,7 +62,7 @@ Once installed, the skills will create and maintain:
 | `docs/features/<slug>/requirements.md` | Monotonically numbered, immutable once accepted |
 | `docs/features/<slug>/plan.md` | Commit-sized steps with verification |
 | `docs/features/<slug>/decisions.md` | Architectural decisions for this feature |
-| `docs/features/<slug>/<slug>.feature` | BDD scenarios (extended Gherkin) |
+| `docs/features/<slug>/scenarios.yml` | Behavior catalog with links to native tests |
 | `.dev-flow/state.yml` | Accumulated system contract (capabilities, budgets) |
 | `.dev-flow/session.yml` | Current phase + active feature slug |
 | `.dev-flow/log.jsonl` | Append-only acceptance log |

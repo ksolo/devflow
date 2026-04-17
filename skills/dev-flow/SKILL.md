@@ -1,6 +1,6 @@
 ---
 name: dev-flow
-description: Orchestrate a disciplined five-phase coding workflow (gather-requirements, create-plan, implement-step, finalize-feature, review-changes) for AI coding agents. Use when the user starts a new feature, kicks off non-trivial work, asks for a "full workflow" or "end-to-end plan", mentions "dev flow" or "dev-flow", wants requirements-before-code, wants commit-sized steps, mentions TDD or BDD, needs to resume paused work, or is unsure which phase to enter next. Enforces requirements-as-migrations (immutable, supersede-only) and extended Gherkin. Routes into the correct phase skill; does not reimplement phase behavior.
+description: Orchestrate a disciplined five-phase coding workflow (gather-requirements, create-plan, implement-step, finalize-feature, review-changes) for AI coding agents. Use when the user starts a new feature, kicks off non-trivial work, asks for a "full workflow" or "end-to-end plan", mentions "dev flow" or "dev-flow", wants requirements-before-code, wants commit-sized steps, mentions TDD or BDD, needs to resume paused work, or is unsure which phase to enter next. Enforces requirements-as-migrations (immutable, supersede-only) and a structured scenarios.yml catalog that links each behavior to one or more native tests. Routes into the correct phase skill; does not reimplement phase behavior.
 license: MIT
 metadata:
   author: Kevin Solorio
@@ -19,13 +19,16 @@ to implement any phase — it is to pick the right phase and hand off.
    requirement file with a machine-readable `deltas:` block. Runs a dry-run conflict check
    against prior accepted requirements before accepting.
 2. **create-plan** — break the accepted requirement into commit-sized steps with verification
-   gates, Mermaid diagrams, captured decisions, and extended-Gherkin scenario skeletons.
+   gates, Mermaid diagrams, captured decisions, and a structured `scenarios.yml` catalog
+   (spec-only entries; tests written in Phase 3).
 3. **implement-step** — one plan step at a time, TDD inner loop, SOLID (SRP / OCP / DIP),
-   run-code-often discipline, pauses for review at each commit boundary.
+   run-code-often discipline, populates each scenario's `tests:` list in the repo's native
+   test framework, pauses for review at each commit boundary.
 4. **finalize-feature** — update `AGENTS.md` / `CLAUDE.md` / `README.md`, remove temp scripts,
-   run the full BDD suite, verify `.dev-flow/state.yml` is consistent.
-5. **review-changes** — readability/maintainability pass, security pass, BDD-tag audit
-   (warnings), state-drift audit (hard fail).
+   run the full test suite, verify `.dev-flow/state.yml` is consistent.
+5. **review-changes** — readability/maintainability pass, security pass, scenarios-coverage
+   audit (hard fail on dangling tests, status/report mismatch), state-drift audit (hard
+   fail).
 
 ## Which phase to enter right now
 
@@ -95,7 +98,7 @@ fall back to the default only if none exist.
     ├── requirements.md       # immutable once accepted
     ├── plan.md
     ├── decisions.md
-    └── <feature-slug>.feature
+    └── scenarios.yml         # scenarios + tests: links, audited in Phase 5
 ```
 
 ## Ground rules you enforce across every phase
@@ -111,8 +114,10 @@ fall back to the default only if none exist.
    over a long speculative edit loop.
 5. **SOLID subset.** Favor Single Responsibility, Open/Closed, and Dependency Inversion in any
    code you produce.
-6. **Extended Gherkin is a valid-Gherkin superset.** Extensions live in tags only (see
-   `create-plan/references/gherkin-extensions.md`). Never introduce new top-level keywords.
+6. **Scenarios are the spec, tests are the proof.** Every scenario in `scenarios.yml` links
+   to one or more tests (unit, integration, contract, load, smoke, e2e) in the consumer
+   repo's native test framework. `review-changes` verifies the link end-to-end. See
+   `create-plan/references/scenarios-schema.md`.
 
 ## Handoff
 

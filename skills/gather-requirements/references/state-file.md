@@ -106,7 +106,7 @@ Given `log.jsonl` in append order, produce `state.yml`:
 ```
 state = empty state
 for each entry in log.jsonl:
-  req = read docs/features/<entry.feature>/requirements.md
+  req = read docs/features/<entry.feature_slug>/requirements.md
   assert req.status == "accepted"
   assert req.id == entry.id
   for each superseded_id in req.supersedes:
