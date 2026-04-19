@@ -118,13 +118,13 @@ Scenario-level fields (outside `tags:`): `pause_after`, `assumes`, `locked`, `ex
 
 This repo is under active development. The planned step sequence:
 
-- [x] Step 1: scaffold (this commit)
-- [ ] Step 2: `dev-flow` orchestrator skill
-- [ ] Step 3: `gather-requirements` skill (+ conflict-detection, state-file, supersede-protocol references)
-- [ ] Step 4: `create-plan` skill (+ scenarios.yml schema references)
-- [ ] Step 5: `implement-step` skill (+ TDD loop, SOLID, pause-points)
-- [ ] Step 6: `finalize-feature` skill (+ handoff checklist)
-- [ ] Step 7: `review-changes` skill (+ readability / security / BDD-tag / state-drift audits)
+- [x] Step 1: scaffold
+- [x] Step 2: `dev-flow` orchestrator skill
+- [x] Step 3: `gather-requirements` skill (+ conflict-detection, state-file, supersede-protocol references)
+- [x] Step 4: `create-plan` skill (+ scenarios.yml schema references)
+- [x] Step 5: `implement-step` skill (+ TDD loop, SOLID, pause-points)
+- [x] Step 6: `finalize-feature` skill (+ handoff checklist)
+- [x] Step 7: `review-changes` skill (+ audit machinery, readability, security, review report)
 - [ ] Step 8: CI validation + finalized README catalog
 - [ ] Step 9: Dogfood on a URL-shortener sample under `examples/`
 
