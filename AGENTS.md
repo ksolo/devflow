@@ -1,13 +1,13 @@
 # AGENTS.md — how to work in this repo
 
 This file tells any coding agent (Claude, Codex, Cursor, Gemini, Copilot, etc.) how to
-navigate and contribute to `dev-flow`.
+navigate and contribute to `devflow`.
 
 ## What this repo is
 
-`dev-flow` is a collection of [Agent Skills](https://agentskills.io/specification) that
+`devflow` is a collection of [Agent Skills](https://agentskills.io/specification) that
 encode a phase-based coding workflow: **gather-requirements → create-plan → implement-step →
-finalize-feature → review-changes**, coordinated by a thin `dev-flow` orchestrator skill.
+finalize-feature → review-changes**, coordinated by a thin `devflow` orchestrator skill.
 
 The repo itself is built using the same workflow — it dogfoods its own skills.
 
@@ -16,7 +16,7 @@ The repo itself is built using the same workflow — it dogfoods its own skills.
 1. **Do not edit accepted requirements in place.** Requirements under
    `docs/features/<slug>/requirements.md` are immutable once marked `status: accepted`. The only
    legal way to change prior behavior is to author a new requirement with
-   `supersedes: [REQ-xxxx]` and regenerate `.dev-flow/state.yml`.
+   `supersedes: [REQ-xxxx]` and regenerate `.devflow/state.yml`.
 
 2. **Run code early and often.** Prefer a temp script you delete later over a long
    speculative edit loop. Temp scripts live under `tmp/` and must be cleaned up in the
@@ -39,9 +39,9 @@ The repo itself is built using the same workflow — it dogfoods its own skills.
 ## Repository layout
 
 ```
-dev-flow/
+devflow/
 ├── skills/                          # skills installed by the skills CLI
-│   ├── dev-flow/                    # orchestrator (Phase 0)
+│   ├── devflow/                    # orchestrator (Phase 0)
 │   ├── gather-requirements/         # Phase 1
 │   ├── create-plan/                 # Phase 2
 │   ├── implement-step/              # Phase 3
@@ -69,7 +69,7 @@ Every skill directory follows the Agent Skills format:
 
 ```mermaid
 flowchart LR
-    user["user kicks off work"] --> devFlow["dev-flow (orchestrator)"]
+    user["user kicks off work"] --> devFlow["devflow (orchestrator)"]
     devFlow --> req["gather-requirements"]
     req -->|requirements.md accepted| plan["create-plan"]
     plan -->|plan.md + decisions.md + scenarios.yml| impl["implement-step"]
@@ -87,13 +87,13 @@ phase. The orchestrator hands off; it does not re-implement phase behavior.
 - Requirements carry monotonic IDs: `REQ-0001`, `REQ-0002`, …
 - Each requirements file ends with a machine-readable `deltas:` YAML block listing
   `adds` / `modifies` / `removes` / `supersedes`.
-- `.dev-flow/state.yml` is the accumulated system contract, deterministically rebuilt from the
+- `.devflow/state.yml` is the accumulated system contract, deterministically rebuilt from the
   ordered acceptance log. It is checked in so PRs show contract drift.
 - Before acceptance, `gather-requirements` dry-runs the delta and runs Tier 1 (structural) and
   Tier 2 (declarative state / budget / dependency) conflict checks. If anything conflicts, the
   user resolves via **amend draft**, **supersede prior**, or **reject draft**.
 - `review-changes` runs a **state-drift audit** that fails hard if the checked-in
-  `.dev-flow/state.yml` disagrees with a re-fold of the acceptance log.
+  `.devflow/state.yml` disagrees with a re-fold of the acceptance log.
 
 The full rules live in [`skills/gather-requirements/references/`](./skills/gather-requirements/references).
 
@@ -119,7 +119,7 @@ Scenario-level fields (outside `tags:`): `pause_after`, `assumes`, `locked`, `ex
 This repo is under active development. The planned step sequence:
 
 - [x] Step 1: scaffold
-- [x] Step 2: `dev-flow` orchestrator skill
+- [x] Step 2: `devflow` orchestrator skill
 - [x] Step 3: `gather-requirements` skill (+ conflict-detection, state-file, supersede-protocol references)
 - [x] Step 4: `create-plan` skill (+ scenarios.yml schema references)
 - [x] Step 5: `implement-step` skill (+ TDD loop, SOLID, pause-points)

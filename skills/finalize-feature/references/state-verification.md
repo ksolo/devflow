@@ -1,6 +1,6 @@
 # State verification
 
-`.dev-flow/state.yml` is a **deterministic function** of `.dev-flow/log.jsonl` and the
+`.devflow/state.yml` is a **deterministic function** of `.devflow/log.jsonl` and the
 set of accepted `requirements.md` files. If the checked-in `state.yml` disagrees with
 a fresh regeneration, something is broken upstream: a requirement was accepted without
 the log being updated, a log entry was hand-edited, or `state.yml` itself was mutated
@@ -38,8 +38,8 @@ serialization) against the checked-in `state.yml`.
 Pseudo-code the agent executes (manually or via a tooling script under `scripts/`):
 
 ```
-regenerated = regenerate_state(log_path=".dev-flow/log.jsonl")
-checked_in  = read_yaml(".dev-flow/state.yml")
+regenerated = regenerate_state(log_path=".devflow/log.jsonl")
+checked_in  = read_yaml(".devflow/state.yml")
 
 if canonicalize(regenerated) == canonicalize(checked_in):
     drift = none
@@ -55,7 +55,7 @@ else:
 - Normalize scalar whitespace.
 - Use a single YAML dialect (no flow/block mixing).
 
-If the repo has a `scripts/dev-flow/verify-state.sh` (or equivalent) that does this,
+If the repo has a `scripts/devflow/verify-state.sh` (or equivalent) that does this,
 use it. Otherwise the agent performs the comparison in-memory.
 
 ## Drift report format
@@ -125,7 +125,7 @@ Then proceed to the final hand-off.
 ## What to do after a failed check
 
 1. Produce the drift report above.
-2. Update `.dev-flow/session.yml`: leave `phase: finalize-feature` (do not advance).
+2. Update `.devflow/session.yml`: leave `phase: finalize-feature` (do not advance).
 3. Tell the engineer: "State drift detected — details above. Resolve and re-enter
    finalize-feature."
 
@@ -152,6 +152,6 @@ Never advance to `review-changes` with unresolved drift.
 
 ### Polyglot repos with multiple `state.yml` files
 
-- v1 assumes a single `.dev-flow/state.yml` at the repo root. Monorepos that need
+- v1 assumes a single `.devflow/state.yml` at the repo root. Monorepos that need
   per-package state are out of scope for now; document the limitation in a DEC entry
   if the repo hits it.

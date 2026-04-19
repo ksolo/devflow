@@ -1,11 +1,11 @@
 ---
 name: implement-step
-description: Execute ONE plan step at a time with a strict TDD red/green/refactor loop and SOLID discipline (SRP, OCP, DIP). Use when the user asks to "start implementing", "write the code", "work the plan", "do step N", "keep going", or when .dev-flow/session.yml has phase=implement-step. For each scenario the step covers, populate the scenarios.yml tests: list, write failing tests in the consumer repo's native framework (vitest/jest/pytest/rspec/go test/etc.), advance status to tests-written, implement code until green, advance status to passing, refactor, and pause at pause_after: true boundaries for engineer review. Runs code early and often via temp scripts under tmp/. If reality conflicts with the plan, stops and escalates back to create-plan for a revision rather than working around it.
+description: Execute ONE plan step at a time with a strict TDD red/green/refactor loop and SOLID discipline (SRP, OCP, DIP). Use when the user asks to "start implementing", "write the code", "work the plan", "do step N", "keep going", or when .devflow/session.yml has phase=implement-step. For each scenario the step covers, populate the scenarios.yml tests: list, write failing tests in the consumer repo's native framework (vitest/jest/pytest/rspec/go test/etc.), advance status to tests-written, implement code until green, advance status to passing, refactor, and pause at pause_after: true boundaries for engineer review. Runs code early and often via temp scripts under tmp/. If reality conflicts with the plan, stops and escalates back to create-plan for a revision rather than working around it.
 license: MIT
 metadata:
   author: Kevin Solorio
   version: "0.1.0"
-  repo: ksolo/dev-flow
+  repo: ksolo/devflow
 ---
 
 # implement-step — Phase 3
@@ -18,12 +18,12 @@ contradicts the plan, you stop and escalate, you do not improvise.
 
 Before starting:
 
-1. `.dev-flow/session.yml` has `phase: implement-step` and a valid `current_plan_step`.
+1. `.devflow/session.yml` has `phase: implement-step` and a valid `current_plan_step`.
 2. `docs/features/<slug>/plan.md` exists, has `status: approved`, and contains the
    referenced step.
 3. `docs/features/<slug>/scenarios.yml` exists and contains the scenarios the step
    covers.
-4. `.dev-flow/state.yml` and `log.jsonl` are consistent (no drift — audited more
+4. `.devflow/state.yml` and `log.jsonl` are consistent (no drift — audited more
    formally in Phase 5, but a mismatch here means something went wrong and you should
    stop).
 

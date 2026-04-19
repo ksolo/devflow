@@ -9,8 +9,8 @@ Tiers 3 (LLM semantic) and 4 (BDD regression) are **not** in v1.
 ## Inputs
 
 - The draft requirement file (`status: draft`) with its `deltas:` block.
-- `.dev-flow/state.yml` (current accumulated contract).
-- `.dev-flow/log.jsonl` (ordered acceptance log).
+- `.devflow/state.yml` (current accumulated contract).
+- `.devflow/log.jsonl` (ordered acceptance log).
 - All accepted requirement files (reachable via the log).
 - All `scenarios.yml` files in the repo (for `locked: true` scenario checks).
 

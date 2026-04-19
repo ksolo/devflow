@@ -195,7 +195,7 @@ Sign-off requires:
 
 On sign-off:
 
-- Update `.dev-flow/session.yml`: `phase: review-changes`, `status: review-complete`.
+- Update `.devflow/session.yml`: `phase: review-changes`, `status: review-complete`.
 - The feature is now ready for whatever the repo's merge / release flow is. The
   agent does not open the PR or merge; that's an engineer action.
 

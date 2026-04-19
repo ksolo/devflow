@@ -1,5 +1,5 @@
 # ============================================================================
-# scenarios-template.yml — dev-flow scenario catalog (v1)
+# scenarios-template.yml — devflow scenario catalog (v1)
 #
 # Copy to docs/features/<feature-slug>/scenarios.yml and fill in. Each scenario
 # is a specification of expected behavior; one or more supporting tests (unit,
@@ -9,7 +9,7 @@
 # and tag vocabulary. Everything below demonstrates the v1 conventions.
 # ============================================================================
 
-schema: dev-flow.scenarios/v1
+schema: devflow.scenarios/v1
 feature: url-shortener
 requirement: REQ-0042
 

@@ -57,8 +57,8 @@ stderr is captured for the report.
 
 ### Inputs
 
-- `.dev-flow/log.jsonl` — append-only acceptance log.
-- `.dev-flow/state.yml` — checked-in accumulated contract.
+- `.devflow/log.jsonl` — append-only acceptance log.
+- `.devflow/state.yml` — checked-in accumulated contract.
 - Every `docs/features/*/requirements.md` referenced by the log.
 
 ### Algorithm

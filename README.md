@@ -1,4 +1,4 @@
-# dev-flow
+# devflow
 
 A collection of [Agent Skills](https://agentskills.io/) that encode a disciplined, phase-based
 coding workflow for AI coding agents. Works across Claude Code, Codex, Cursor, Gemini, Copilot,
@@ -6,7 +6,7 @@ and any other agent that speaks the [Agent Skills spec](https://agentskills.io/s
 
 ## What it does
 
-`dev-flow` teaches your coding agent to work the way you actually want it to:
+`devflow` teaches your coding agent to work the way you actually want it to:
 
 1. **Align on requirements** before writing a line of code — conversational Q&A, outputs a committed requirements doc.
 2. **Plan** in commit-sized steps with verification gates, Mermaid diagrams, captured decisions, and BDD scenario skeletons.
@@ -19,7 +19,7 @@ Under the hood, requirements are treated like database migrations: monotonically
 ## Install
 
 ```bash
-npx skills add ksolo/dev-flow
+npx skills add ksolo/devflow
 ```
 
 This works on every agent supported by the [`skills` CLI](https://skills.sh):
@@ -30,7 +30,7 @@ goose, kilo, kiro-cli, opencode, roo, trae, windsurf.
 
 | Skill | Phase | Activation triggers |
 |---|---|---|
-| `dev-flow` | Orchestrator | "let's start a feature", "new feature", "kick off work" |
+| `devflow` | Orchestrator | "let's start a feature", "new feature", "kick off work" |
 | `gather-requirements` | 1. Requirements | "requirements", "what do you want", "change request" |
 | `create-plan` | 2. Plan | "plan this", "break it down", "TDD plan" |
 | `implement-step` | 3. Implement | "implement", "next step", "write the code" |
@@ -44,7 +44,7 @@ plus optional `references/`, `scripts/`, and `assets/`.
 ## Repository layout
 
 ```
-dev-flow/
+devflow/
 ├── skills/                 # the skills themselves (installed by the skills CLI)
 ├── examples/               # dogfooded sample features
 ├── AGENTS.md               # how agents should navigate this repo
@@ -63,9 +63,9 @@ Once installed, the skills will create and maintain:
 | `docs/features/<slug>/plan.md` | Commit-sized steps with verification |
 | `docs/features/<slug>/decisions.md` | Architectural decisions for this feature |
 | `docs/features/<slug>/scenarios.yml` | Behavior catalog with links to native tests |
-| `.dev-flow/state.yml` | Accumulated system contract (capabilities, budgets) |
-| `.dev-flow/session.yml` | Current phase + active feature slug |
-| `.dev-flow/log.jsonl` | Append-only acceptance log |
+| `.devflow/state.yml` | Accumulated system contract (capabilities, budgets) |
+| `.devflow/session.yml` | Current phase + active feature slug |
+| `.devflow/log.jsonl` | Append-only acceptance log |
 
 Location defaults above can be overridden per project; the skills auto-detect existing
 `docs/`, `specs/`, or `features/` conventions and fall back to `docs/features/`.

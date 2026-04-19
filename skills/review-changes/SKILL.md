@@ -1,11 +1,11 @@
 ---
 name: review-changes
-description: Review a finalized feature for readability, maintainability, and security before it ships, and run the mechanical audits (scenarios-coverage, state-drift, traceability) that hard-block merge. Use when finalize-feature has completed, the user says "review this", "code review", "security review", "ready to merge?", "what should I check", or when .dev-flow/session.yml has phase=review-changes. Produces a review report with findings sorted by severity (block / warn / info), each citing exact files and lines with a suggested resolution. Does NOT silently fix findings — routes block-severity issues back to implement-step (code fixes) or create-plan (plan/scenario fixes). Covers SOLID subset, rich domain types, naming, complexity, dead code, test quality, authn/authz, input validation, injection surfaces, secrets, logging hygiene, and denial-of-service resilience.
+description: Review a finalized feature for readability, maintainability, and security before it ships, and run the mechanical audits (scenarios-coverage, state-drift, traceability) that hard-block merge. Use when finalize-feature has completed, the user says "review this", "code review", "security review", "ready to merge?", "what should I check", or when .devflow/session.yml has phase=review-changes. Produces a review report with findings sorted by severity (block / warn / info), each citing exact files and lines with a suggested resolution. Does NOT silently fix findings — routes block-severity issues back to implement-step (code fixes) or create-plan (plan/scenario fixes). Covers SOLID subset, rich domain types, naming, complexity, dead code, test quality, authn/authz, input validation, injection surfaces, secrets, logging hygiene, and denial-of-service resilience.
 license: MIT
 metadata:
   author: Kevin Solorio
   version: "0.1.0"
-  repo: ksolo/dev-flow
+  repo: ksolo/devflow
 ---
 
 # review-changes — Phase 5
@@ -19,7 +19,7 @@ are judgment calls tiered by severity.
 
 Before starting:
 
-1. `.dev-flow/session.yml` has `phase: review-changes`.
+1. `.devflow/session.yml` has `phase: review-changes`.
 2. `finalize-feature` has run: `tmp/` is empty (marker retained), agent docs updated,
    test suite re-run clean, state drift zero.
 3. Every scenario in `scenarios.yml` is `passing`, `deferred` (with a linked
@@ -68,7 +68,7 @@ These are hard gates. Any failure halts review and routes back.
   is discoverable in the framework's output; every `status: passing` has all tests
   green in the latest CI report; no `status: spec-only` or `status: tests-written`
   remains.
-- **State-drift audit.** `.dev-flow/state.yml` regenerated from `log.jsonl` matches
+- **State-drift audit.** `.devflow/state.yml` regenerated from `log.jsonl` matches
   the checked-in copy byte-for-byte after canonicalization.
 - **Traceability audit.** Every `tags.req`, `tags.plan_step`, `tags.decision`
   resolves to an existing REQ / plan step / DEC. No superseded-REQ references on
@@ -89,7 +89,7 @@ Work through every file changed in this feature (use `git diff --name-only
   reference.
 - **Naming.** Does the name tell you what the thing does without reading the body?
 - **Complexity.** Function/method length, cyclomatic complexity, nesting depth.
-  Repo-specific thresholds if defined in `.dev-flow.yml`; otherwise heuristic.
+  Repo-specific thresholds if defined in `.devflow.yml`; otherwise heuristic.
 - **Dead code.** Unused imports, unreferenced exports, commented-out code.
 - **Test quality.** Tests that assert the right thing (not just "function was
   called"), no hidden shared fixtures that make tests order-dependent, no test
@@ -186,7 +186,7 @@ Full report schema: [`references/review-report.md`](references/review-report.md)
 
 **If there are block findings:**
 
-1. Update `.dev-flow/session.yml`: keep `phase: review-changes`, add
+1. Update `.devflow/session.yml`: keep `phase: review-changes`, add
    `pending_findings: <path-to-report>`.
 2. Tell the engineer: "Review has N block findings. See `<path>`. Route the fixes
    via `implement-step` (for code changes) or `create-plan` (for scenario/plan
@@ -195,7 +195,7 @@ Full report schema: [`references/review-report.md`](references/review-report.md)
 
 **If there are only warn/info findings and no block:**
 
-1. Update `.dev-flow/session.yml`: `phase: review-changes`, `status: review-complete`.
+1. Update `.devflow/session.yml`: `phase: review-changes`, `status: review-complete`.
 2. Produce a short sign-off summary referencing the report. Warn/info findings are
    documented but not blocking.
 3. Hand control back to the engineer for whatever the repo's merge / release flow is

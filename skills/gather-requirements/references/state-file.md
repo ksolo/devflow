@@ -1,7 +1,7 @@
-# `.dev-flow/state.yml` and the `deltas:` block
+# `.devflow/state.yml` and the `deltas:` block
 
 `state.yml` is the **accumulated system contract** for the consumer repo. It is
-deterministically rebuilt from the ordered acceptance log (`.dev-flow/log.jsonl`) by folding
+deterministically rebuilt from the ordered acceptance log (`.devflow/log.jsonl`) by folding
 each accepted requirement's `deltas:` block in order.
 
 Treat it like a compiled artifact: check it in so PRs show contract drift, but never
@@ -10,10 +10,10 @@ hand-edit it.
 ## Schema
 
 ```yaml
-# .dev-flow/state.yml
+# .devflow/state.yml
 schema_version: 1
 built_at: 2026-04-16T16:45:00Z       # timestamp of last regeneration
-built_from: .dev-flow/log.jsonl      # always this; aids reproducibility
+built_from: .devflow/log.jsonl      # always this; aids reproducibility
 
 capabilities:                        # things the system can do
   - id: <namespaced-kebab-case>      # e.g. url-shortener.create
@@ -136,7 +136,7 @@ If the deltas of an accepted requirement are re-applied to the state it produced
 is identical. This lets you rebuild state.yml from scratch at any time:
 
 ```bash
-rm .dev-flow/state.yml
+rm .devflow/state.yml
 # replay the log in order, fold each requirement's deltas
 # result must equal the checked-in file (or the state-drift audit fails)
 ```

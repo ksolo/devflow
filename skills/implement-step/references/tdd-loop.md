@@ -127,7 +127,7 @@ Default convention:
   <scenario>` and its green state as `step N.m green: <scenario>`. Verbose log, rich
   TDD history.
 
-Either is acceptable. The engineer sets the repo convention in `.dev-flow.yml`; the
+Either is acceptable. The engineer sets the repo convention in `.devflow.yml`; the
 default is Option A.
 
 ## What NOT to do

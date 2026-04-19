@@ -11,7 +11,7 @@ This file is the authoritative schema. The template in
 ## File shape
 
 ```yaml
-schema: dev-flow.scenarios/v1
+schema: devflow.scenarios/v1
 feature: <slug>                  # e.g. url-shortener
 requirement: REQ-<NNNN>          # primary requirement; others are referenced via tags.req
 
@@ -42,7 +42,7 @@ scenarios:
 
 ## Required fields
 
-- `schema`: must be `dev-flow.scenarios/v1`.
+- `schema`: must be `devflow.scenarios/v1`.
 - `feature`: kebab-case feature slug matching the directory name.
 - `requirement`: primary `REQ-NNNN` the scenarios satisfy.
 - `scenarios[].id`: unique within the file, kebab-case.
@@ -134,7 +134,7 @@ Every entry requires:
 - `name`: the exact test name as it appears in the test file (so the audit can
   resolve it unambiguously against JUnit / framework output).
 - `kind`: one of `unit`, `integration`, `contract`, `e2e`, `load`, `smoke`,
-  `security`. New kinds may be introduced per-repo via `.dev-flow.yml`.
+  `security`. New kinds may be introduced per-repo via `.devflow.yml`.
 
 A single scenario may list tests of different kinds — e.g. a unit test
 covering the validator plus an integration test covering the endpoint. This
@@ -170,5 +170,5 @@ Failures produce a scenarios-audit report with remediation options.
   unless repo config declares them.
 - **`status: passing` with failing tests in report**: hard-fail.
 
-This matches the "guided" philosophy used elsewhere in dev-flow: block only on
+This matches the "guided" philosophy used elsewhere in devflow: block only on
 unambiguous correctness issues; nudge with warnings on style/vocabulary.

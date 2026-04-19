@@ -1,11 +1,11 @@
 ---
 name: finalize-feature
-description: Prepare a completed feature for handoff to review. Use when all plan steps have advanced to passing, the user says "finalize", "wrap up", "clean up", "ready for review", "we're done implementing", or when .dev-flow/session.yml has phase=finalize-feature. Updates agent-facing docs (AGENTS.md / CLAUDE.md / README.md / CHANGELOG), empties the tracked contents of tmp/ after engineer confirmation (keeping the directory with a .keep marker so runtimes that expect it to exist still work), verifies that scripts and utilities introduced during implementation are referenced from plan.md, re-runs the full test suite with the scenarios-coverage audit, and regenerates .dev-flow/state.yml from log.jsonl to check for drift. Does NOT write production code and does NOT perform code review — routes to review-changes at the end for readability/security/audit passes.
+description: Prepare a completed feature for handoff to review. Use when all plan steps have advanced to passing, the user says "finalize", "wrap up", "clean up", "ready for review", "we're done implementing", or when .devflow/session.yml has phase=finalize-feature. Updates agent-facing docs (AGENTS.md / CLAUDE.md / README.md / CHANGELOG), empties the tracked contents of tmp/ after engineer confirmation (keeping the directory with a .keep marker so runtimes that expect it to exist still work), verifies that scripts and utilities introduced during implementation are referenced from plan.md, re-runs the full test suite with the scenarios-coverage audit, and regenerates .devflow/state.yml from log.jsonl to check for drift. Does NOT write production code and does NOT perform code review — routes to review-changes at the end for readability/security/audit passes.
 license: MIT
 metadata:
   author: Kevin Solorio
   version: "0.1.0"
-  repo: ksolo/dev-flow
+  repo: ksolo/devflow
 ---
 
 # finalize-feature — Phase 4
@@ -18,7 +18,7 @@ document, verify, and hand off.
 
 Before starting:
 
-1. `.dev-flow/session.yml` has `phase: finalize-feature`.
+1. `.devflow/session.yml` has `phase: finalize-feature`.
 2. Every step in `docs/features/<slug>/plan.md` is complete (tracked by
    `session.yml.current_plan_step` being past the last step, or plan steps all marked
    as done in the plan's revision log).
@@ -38,7 +38,7 @@ If any of these fail, stop and explain why you can't finalize.
 3. **Agent docs are orientation aids, not duplication of plan/requirements.** Update
    AGENTS.md / CLAUDE.md / README.md to point at what's new; do not copy the
    feature's plan or requirements content wholesale.
-4. **State is deterministic.** `.dev-flow/state.yml` is regenerable from
+4. **State is deterministic.** `.devflow/state.yml` is regenerable from
    `log.jsonl`. Finalize re-runs the regeneration and fails on any drift.
 5. **Never silently change accepted requirements.** Same Phase 1 rules — supersede,
    don't edit.
@@ -139,7 +139,7 @@ Full rules: [`references/artifact-cleanup.md`](references/artifact-cleanup.md).
    - Every `tags.req`, `tags.plan_step`, `tags.decision` resolves.
 4. If anything fails, route back to `implement-step` with the specific failure.
 
-### 4. Verify `.dev-flow/state.yml` consistency
+### 4. Verify `.devflow/state.yml` consistency
 
 Full rules: [`references/state-verification.md`](references/state-verification.md).
 
@@ -181,7 +181,7 @@ State.yml drift: none.
 Handing off to `review-changes`.
 ```
 
-Update `.dev-flow/session.yml`: `phase: review-changes`.
+Update `.devflow/session.yml`: `phase: review-changes`.
 
 Hand off to `review-changes`.
 

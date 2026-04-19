@@ -132,10 +132,10 @@ All three are **monotonic and globally unique** across features:
 
 Both are orthogonal to the traceability tags, but worth calling out:
 
-- `.dev-flow/state.yml` is the **contract** snapshot. It doesn't carry scenario links —
+- `.devflow/state.yml` is the **contract** snapshot. It doesn't carry scenario links —
   scenarios read the contract's capability/budget ids indirectly via their `tags.req`
   link.
-- `.dev-flow/log.jsonl` is the **acceptance log**. It orders REQs for state regeneration
+- `.devflow/log.jsonl` is the **acceptance log**. It orders REQs for state regeneration
   and for the state-drift audit. Broken link checks can consult it to find superseded
   REQs.
 

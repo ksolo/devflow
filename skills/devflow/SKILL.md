@@ -1,14 +1,14 @@
 ---
-name: dev-flow
-description: Orchestrate a disciplined five-phase coding workflow (gather-requirements, create-plan, implement-step, finalize-feature, review-changes) for AI coding agents. Use when the user starts a new feature, kicks off non-trivial work, asks for a "full workflow" or "end-to-end plan", mentions "dev flow" or "dev-flow", wants requirements-before-code, wants commit-sized steps, mentions TDD or BDD, needs to resume paused work, or is unsure which phase to enter next. Enforces requirements-as-migrations (immutable, supersede-only) and a structured scenarios.yml catalog that links each behavior to one or more native tests. Routes into the correct phase skill; does not reimplement phase behavior.
+name: devflow
+description: Orchestrate a disciplined five-phase coding workflow (gather-requirements, create-plan, implement-step, finalize-feature, review-changes) for AI coding agents. Use when the user starts a new feature, kicks off non-trivial work, asks for a "full workflow" or "end-to-end plan", mentions "dev flow" or "devflow", wants requirements-before-code, wants commit-sized steps, mentions TDD or BDD, needs to resume paused work, or is unsure which phase to enter next. Enforces requirements-as-migrations (immutable, supersede-only) and a structured scenarios.yml catalog that links each behavior to one or more native tests. Routes into the correct phase skill; does not reimplement phase behavior.
 license: MIT
 metadata:
   author: Kevin Solorio
   version: "0.1.0"
-  repo: ksolo/dev-flow
+  repo: ksolo/devflow
 ---
 
-# dev-flow — orchestrator
+# devflow — orchestrator
 
 You are running a disciplined, phase-based coding workflow. Your job in this skill is **not**
 to implement any phase — it is to pick the right phase and hand off.
@@ -25,7 +25,7 @@ to implement any phase — it is to pick the right phase and hand off.
    run-code-often discipline, populates each scenario's `tests:` list in the repo's native
    test framework, pauses for review at each commit boundary.
 4. **finalize-feature** — update `AGENTS.md` / `CLAUDE.md` / `README.md`, remove temp scripts,
-   run the full test suite, verify `.dev-flow/state.yml` is consistent.
+   run the full test suite, verify `.devflow/state.yml` is consistent.
 5. **review-changes** — readability/maintainability pass, security pass, scenarios-coverage
    audit (hard fail on dangling tests, status/report mismatch), state-drift audit (hard
    fail).
@@ -34,7 +34,7 @@ to implement any phase — it is to pick the right phase and hand off.
 
 ```mermaid
 flowchart TD
-    start["user message"] --> q1{".dev-flow/session.yml exists and in-progress?"}
+    start["user message"] --> q1{".devflow/session.yml exists and in-progress?"}
     q1 -- "yes" --> resume["resume the saved phase"]
     q1 -- "no" --> q2{"requirements exist for this work?"}
     q2 -- "no" --> req["Phase 1: gather-requirements"]
@@ -49,7 +49,7 @@ flowchart TD
 
 Check in this order before asking the user:
 
-1. `.dev-flow/session.yml` — resume the saved phase if `status: in-progress`.
+1. `.devflow/session.yml` — resume the saved phase if `status: in-progress`.
 2. `docs/features/<slug>/requirements.md` — if absent or `status: draft`, enter
    `gather-requirements`.
 3. `docs/features/<slug>/plan.md` — if absent or incomplete, enter `create-plan`.
@@ -62,7 +62,7 @@ Check in this order before asking the user:
 The orchestrator owns a single file at the consumer repo root:
 
 ```yaml
-# .dev-flow/session.yml
+# .devflow/session.yml
 schema_version: 1
 feature_slug: url-shortener
 phase: implement-step
@@ -75,13 +75,13 @@ Read this first. Update it on every phase transition. Leave it checked in so ses
 across agents and machines.
 
 **Do not confuse `session.yml` (ephemeral flow state) with `state.yml` (permanent system
-contract).** They live side-by-side under `.dev-flow/`:
+contract).** They live side-by-side under `.devflow/`:
 
 | File | Purpose | Lifecycle |
 |---|---|---|
-| `.dev-flow/session.yml` | current phase, active feature, last step | ephemeral — reflects where the work is right now |
-| `.dev-flow/state.yml` | accumulated capabilities, actors, rules, budgets | permanent — regenerated from accepted requirements |
-| `.dev-flow/log.jsonl` | append-only acceptance log (REQ id, timestamp, author) | permanent — ordering source for state rebuilds |
+| `.devflow/session.yml` | current phase, active feature, last step | ephemeral — reflects where the work is right now |
+| `.devflow/state.yml` | accumulated capabilities, actors, rules, budgets | permanent — regenerated from accepted requirements |
+| `.devflow/log.jsonl` | append-only acceptance log (REQ id, timestamp, author) | permanent — ordering source for state rebuilds |
 
 ## Artifact locations (in the consumer repo)
 
@@ -90,7 +90,7 @@ fall back to the default only if none exist.
 
 ```
 <consumer-repo>/
-├── .dev-flow/
+├── .devflow/
 │   ├── session.yml
 │   ├── state.yml
 │   └── log.jsonl
@@ -131,7 +131,7 @@ every phase skill owns its own detail, templates, and references. Keep this orch
 
 ## Resuming across sessions
 
-If `.dev-flow/session.yml` says `phase: implement-step, current_plan_step: 3`:
+If `.devflow/session.yml` says `phase: implement-step, current_plan_step: 3`:
 
 1. Read the plan step 3 description from `docs/features/<slug>/plan.md`.
 2. Read any in-progress notes from the feature's decisions log.

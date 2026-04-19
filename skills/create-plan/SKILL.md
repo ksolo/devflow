@@ -5,7 +5,7 @@ license: MIT
 metadata:
   author: Kevin Solorio
   version: "0.1.0"
-  repo: ksolo/dev-flow
+  repo: ksolo/devflow
 ---
 
 # create-plan — Phase 2
@@ -141,7 +141,7 @@ Produce a short summary:
 
 Ask the engineer to review before handing off. If approved:
 
-1. Update `.dev-flow/session.yml`: `phase: implement-step`, `current_plan_step: 1`.
+1. Update `.devflow/session.yml`: `phase: implement-step`, `current_plan_step: 1`.
 2. Hand off to `implement-step` with the handoff line:
 
    > Plan for **REQ-NNNN** (`<slug>`) ready: 7 steps, 4 DEC entries, 9 scenarios (3 paused).

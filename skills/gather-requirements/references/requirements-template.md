@@ -143,7 +143,7 @@ supersedes: []
 - **Keep the human-readable section conversational.** It's for humans reading the repo a year
   from now. Prefer prose over bullet soup where it's clearer.
 - **The `deltas:` block is a contract**, not prose. Every capability / actor / rule / budget
-  named here lands in `.dev-flow/state.yml` on acceptance. Typos here create drift.
+  named here lands in `.devflow/state.yml` on acceptance. Typos here create drift.
 - **Every acceptance criterion should have a matching functional requirement**, but not the
   reverse — it's fine to have a functional requirement that's covered by multiple criteria.
 - **If `supersedes:` is non-empty**, the *Supersedes* section must list what changes and why.

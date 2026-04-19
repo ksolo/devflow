@@ -106,7 +106,7 @@ auto-pick a path.
 Authoring a supersede looks like authoring any other requirement, with these additions:
 
 1. **Read the superseded REQ first.** Understand what it promised and who depends on it.
-2. **Check `.dev-flow/log.jsonl`** for REQs that were accepted *after* the one being
+2. **Check `.devflow/log.jsonl`** for REQs that were accepted *after* the one being
    superseded. Their deltas may rely on behavior you're about to remove.
 3. **Fill the Supersedes section** with a table or bullet list of changes:
 

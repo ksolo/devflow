@@ -24,7 +24,7 @@ agents need to know the decision was intentional, not accidental.
 
 ## SOLID subset (enforced in Phase 3)
 
-`dev-flow` specifically calls out three of the five SOLID principles. Phase 3
+`devflow` specifically calls out three of the five SOLID principles. Phase 3
 (`implement-step`) leans on these; Phase 2 should plan around them.
 
 ### SRP — Single Responsibility

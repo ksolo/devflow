@@ -91,7 +91,7 @@ Ask these only when the draft references `supersedes:`.
 
 - Which accepted REQ-IDs does this replace, fully or partially?
 - For each superseded REQ, what changes (behavior, budget, scope)?
-- Are there dependent REQs that referenced the superseded behavior? (check `.dev-flow/log.jsonl`)
+- Are there dependent REQs that referenced the superseded behavior? (check `.devflow/log.jsonl`)
 - Should the superseded REQ's BDD scenarios be removed, updated, or kept as historical
   fixtures?
 

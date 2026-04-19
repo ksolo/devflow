@@ -63,7 +63,7 @@ Severity: usually **info** or **warn**. **Block** when the name actively mislead
 ### Complexity
 
 - Function/method length. Threshold is repo-specific (often ~40 lines); if
-  `.dev-flow.yml` defines one, use it.
+  `.devflow.yml` defines one, use it.
 - Nesting depth. More than three levels of nesting is a smell.
 - Cyclomatic complexity. Use the repo's linter output if available
   (`eslint-plugin-complexity`, `flake8 C901`, `gocyclo`, etc.).

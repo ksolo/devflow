@@ -1,11 +1,11 @@
 ---
 name: gather-requirements
-description: Conduct a conversational Q&A to capture requirements for a feature or change, then dry-run the draft against prior accepted requirements to detect conflicts before acceptance. Use when the user mentions "new feature", "change request", "requirements", "spec this out", "what do you want", "what are we building", "let's figure out what this needs", "supersede", "replace the old requirement", or is about to start non-trivial work without a requirements doc. Produces a monotonically-numbered, immutable requirement file with a machine-readable deltas block, runs structural and declarative-state conflict checks, and either accepts (folding into .dev-flow/state.yml) or reports conflicts with resolution paths.
+description: Conduct a conversational Q&A to capture requirements for a feature or change, then dry-run the draft against prior accepted requirements to detect conflicts before acceptance. Use when the user mentions "new feature", "change request", "requirements", "spec this out", "what do you want", "what are we building", "let's figure out what this needs", "supersede", "replace the old requirement", or is about to start non-trivial work without a requirements doc. Produces a monotonically-numbered, immutable requirement file with a machine-readable deltas block, runs structural and declarative-state conflict checks, and either accepts (folding into .devflow/state.yml) or reports conflicts with resolution paths.
 license: MIT
 metadata:
   author: Kevin Solorio
   version: "0.1.0"
-  repo: ksolo/dev-flow
+  repo: ksolo/devflow
 ---
 
 # gather-requirements — Phase 1
@@ -21,7 +21,7 @@ numbered, immutable once accepted, supersede-only.
 2. **Accepted requirements are immutable.** Never edit `status: accepted` files in place. Any
    change in intent requires a **new** requirement file with `supersedes: [REQ-xxxx]`.
 3. **No code in this phase.** Only artifacts: the requirement file and updates to
-   `.dev-flow/state.yml` / `.dev-flow/log.jsonl`.
+   `.devflow/state.yml` / `.devflow/log.jsonl`.
 4. **Conflict before accept.** Every draft runs through the dry-run before acceptance. See
    [`references/conflict-detection.md`](references/conflict-detection.md).
 
@@ -94,7 +94,7 @@ Follow [`references/conflict-detection.md`](references/conflict-detection.md) to
 
 - **Tier 1 (structural):** dangling refs, duplicate IDs, touching `locked: true` scenarios,
   duplicate acceptance-criterion slugs with different outcomes.
-- **Tier 2 (declarative state):** apply the `deltas:` block to a copy of `.dev-flow/state.yml`
+- **Tier 2 (declarative state):** apply the `deltas:` block to a copy of `.devflow/state.yml`
   and check for capability/actor/rule consistency + numeric/enum budget contradictions.
 
 If either tier fails, generate a **conflict report** per
@@ -113,13 +113,13 @@ it to the engineer with the three resolution paths.
 If dry-run passes:
 
 1. Flip the draft's frontmatter `status: draft` → `status: accepted`.
-2. Apply the `deltas:` to `.dev-flow/state.yml` (see
+2. Apply the `deltas:` to `.devflow/state.yml` (see
    [`references/state-file.md`](references/state-file.md)). Commit the regenerated file.
-3. Append a line to `.dev-flow/log.jsonl`:
+3. Append a line to `.devflow/log.jsonl`:
    ```json
    {"id":"REQ-0042","accepted_at":"2026-04-16T16:45:00Z","feature":"url-shortener","supersedes":[]}
    ```
-4. Update `.dev-flow/session.yml`: `phase: create-plan`.
+4. Update `.devflow/session.yml`: `phase: create-plan`.
 5. Hand off to the `create-plan` skill with a one-line summary.
 
 ## Handoff format
@@ -148,7 +148,7 @@ Notes* section explains why. The dry-run will still run and may surface *further
 
 - Produce plans, BDD scenarios, or code — those are later phases.
 - Edit accepted requirement files.
-- Mutate `.dev-flow/state.yml` by hand (always regenerate from the log).
+- Mutate `.devflow/state.yml` by hand (always regenerate from the log).
 - Skip the dry-run.
 
 ## References
