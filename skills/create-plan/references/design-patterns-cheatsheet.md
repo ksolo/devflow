@@ -123,6 +123,9 @@ errors.
 - **Singletons with global mutable state.** If global, at least behind an interface so it
   can be replaced in tests.
 - **Leaky abstractions.** Returning DB rows from a repository instead of domain objects.
+- **Primitive obsession / anonymous dicts.** Passing `string` / `number` / `dict[str,
+  Any]` / `Record<string, unknown>` where a domain concept (`ShortCode`, `Url`,
+  `UserId`) belongs. Wrap in a named type with its invariants in the constructor.
 - **Premature generality.** Adding extension points before they're needed. YAGNI applies.
 
 ## Recording pattern reuse in decisions.md
