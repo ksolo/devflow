@@ -130,6 +130,36 @@ This repo is under active development. The planned step sequence:
 
 Each step ends at a reviewable commit.
 
+### Resume note for the next session
+
+Last commit on `main`: `ff3b8c8` — `rename dev-flow → devflow`. Working tree clean.
+
+**Next up — Step 8: CI validation + finalized README catalog + install instructions.** Scope:
+
+1. **Skill metadata validation in CI.** A GitHub Actions workflow that validates every
+   `skills/*/SKILL.md` frontmatter against the [Agent Skills specification](https://agentskills.io/specification)
+   (required keys: `name`, `description`; optional: `license`, `metadata`). If `skills-ref`
+   is available on npm, use it; otherwise write a short Node or Python validator committed
+   under `scripts/` (follow the run-discipline contract). Runs on every push and PR.
+2. **Markdown link check (optional but cheap).** Lychee or markdown-link-check on every
+   `.md` in the repo. Guards against rot as references multiply.
+3. **Mermaid syntax check (optional).** `@mermaid-js/mermaid-cli --parse` over every
+   fenced `mermaid` block. Also cheap, also worth it — we have a lot of diagrams.
+4. **Finalized `README.md` catalog.** The per-skill description section with correct
+   install commands now that the rename has landed (`npx skills add ksolo/devflow`,
+   plus per-skill additions where the user wants only a subset). Link each catalog
+   entry to its `SKILL.md` for easy navigation.
+5. **`CHANGELOG.md`.** Start one — entry `0.1.0` covers Steps 1–7 and the rename.
+6. **Pre-push / pre-commit hints (optional).** A single-line note in `AGENTS.md` /
+   `CLAUDE.md` pointing at the validator command for agents to run before committing.
+
+Step 8 does NOT add new skills or change workflow behavior. It's plumbing and
+distribution. After it lands, Step 9 dogfoods the whole pipeline on a URL-shortener
+sample under `examples/`.
+
+Recommended first action for the resuming session: read this file, then
+`skills/devflow/SKILL.md`, then proceed.
+
 ## Contributing
 
 1. Start a new feature with the `gather-requirements` skill (dogfood the workflow).
