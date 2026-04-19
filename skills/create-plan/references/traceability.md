@@ -11,7 +11,7 @@ flowchart LR
     req["requirements.md<br/>REQ-0042"] -->|tags.req| scenario["scenarios.yml<br/>scenario entry"]
     plan["plan.md<br/>step N"] -->|tags.plan_step| scenario
     decisions["decisions.md<br/>DEC-NNNN"] -->|tags.decision| scenario
-    scenario -->|tests[].path + name| tests["native tests<br/>(unit, integration, load, ...)"]
+    scenario -->|tests.path + name| tests["native tests<br/>(unit, integration, load, ...)"]
     ci["CI report<br/>(JUnit XML)"] -.resolves.-> tests
     state["state.yml"] -.read by.-> req
     log["log.jsonl"] -.order.-> req

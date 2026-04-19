@@ -12,6 +12,7 @@ Short version:
   only by superseding.
 - Keep each `SKILL.md` under ~500 lines; push detail to `references/`.
 - Stop at each plan step's commit boundary and await review.
+- Run `npm run check` before committing (validates skill metadata + parses every Mermaid block).
 
 See [AGENTS.md](./AGENTS.md) for the full workflow, repository layout, phase routing, and
 development status.

@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-skills:
+    name: Validate skill metadata
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .tool-versions
+      - name: skills-ref validate (every skills/*/)
+        run: bash scripts/validate-skills.sh
+
+  mermaid-check:
+    name: Parse Mermaid diagrams
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .tool-versions
+          cache: npm
+      - name: Install workspace tooling
+        run: npm install --no-audit --no-fund
+      - name: mermaid.parse every ```mermaid block
+        run: npm run check-mermaid
+
+  link-check:
+    name: Markdown link check (non-blocking)
+    runs-on: ubuntu-latest
+    # Optional per Step 8 scope — network flakiness shouldn't fail the whole build.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: Lychee
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --max-concurrency 5
+            --timeout 20
+            --retry-wait-time 2
+            --accept 200..=299,403,429
+            --exclude-path node_modules
+            --exclude-path .git
+            './**/*.md'
+          fail: true

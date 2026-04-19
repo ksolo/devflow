@@ -18,28 +18,43 @@ Under the hood, requirements are treated like database migrations: monotonically
 
 ## Install
 
+Install the full pipeline with the [`skills` CLI](https://www.npmjs.com/package/skills):
+
 ```bash
 npx skills add ksolo/devflow
 ```
 
-This works on every agent supported by the [`skills` CLI](https://skills.sh):
-amp, antigravity, claude-code, codex, cursor, droid, gemini, gemini-cli, github-copilot,
-goose, kilo, kiro-cli, opencode, roo, trae, windsurf.
+Or install just the pieces you want — every skill is independently installable:
+
+```bash
+# just the orchestrator + planning phases
+npx skills add ksolo/devflow --skill devflow --skill gather-requirements --skill create-plan
+
+# target a specific agent
+npx skills add ksolo/devflow -a claude-code
+npx skills add ksolo/devflow -a cursor
+```
+
+The `skills` CLI supports every agent it ships with —
+[full list](https://www.npmjs.com/package/skills#supported-agents) — including
+amp, antigravity, claude-code, codex, cursor, droid, gemini-cli, github-copilot,
+goose, kilo, kiro-cli, opencode, roo, trae, windsurf, and more.
 
 ## Skills catalog
 
-| Skill | Phase | Activation triggers |
-|---|---|---|
-| `devflow` | Orchestrator | "let's start a feature", "new feature", "kick off work" |
-| `gather-requirements` | 1. Requirements | "requirements", "what do you want", "change request" |
-| `create-plan` | 2. Plan | "plan this", "break it down", "TDD plan" |
-| `implement-step` | 3. Implement | "implement", "next step", "write the code" |
-| `finalize-feature` | 4. Finalize | "wrap up", "finalize", "update docs", "handoff" |
-| `review-changes` | 5. Review | "review", "audit", "readability check", "security review" |
+Every skill is self-contained under [`skills/`](./skills) and follows the
+[Agent Skills specification](https://agentskills.io/specification): a `SKILL.md` with
+YAML frontmatter plus optional `references/`, `scripts/`, and `assets/`. Click a skill
+name to read its `SKILL.md`.
 
-Each skill is self-contained under [`skills/`](./skills) and follows the
-[Agent Skills format](https://agentskills.io/specification): a `SKILL.md` with YAML frontmatter
-plus optional `references/`, `scripts/`, and `assets/`.
+| Skill | Phase | What it does | Sample activation triggers |
+|---|---|---|---|
+| [`devflow`](./skills/devflow/SKILL.md) | 0. Orchestrator | Routes the user into the right phase; doesn't reimplement phase behavior. | *"let's start a feature"*, *"new feature"*, *"kick off work"*, *"which phase am I in"* |
+| [`gather-requirements`](./skills/gather-requirements/SKILL.md) | 1. Requirements | Conversational Q&A producing a monotonically-numbered, immutable requirement with a `deltas:` block; dry-runs conflicts before acceptance. | *"requirements"*, *"change request"*, *"what do you want"*, *"supersede"* |
+| [`create-plan`](./skills/create-plan/SKILL.md) | 2. Plan | Breaks the accepted requirement into commit-sized steps with Mermaid diagrams, `decisions.md`, and a spec-only `scenarios.yml` catalog. | *"plan this"*, *"break it down"*, *"TDD plan"*, *"step-by-step approach"* |
+| [`implement-step`](./skills/implement-step/SKILL.md) | 3. Implement | Executes one plan step at a time with a strict TDD loop and SOLID (SRP/OCP/DIP) discipline; pauses at each commit boundary. | *"implement"*, *"next step"*, *"write the code"*, *"keep going"* |
+| [`finalize-feature`](./skills/finalize-feature/SKILL.md) | 4. Finalize | Updates agent docs, empties `tmp/`, re-runs the full suite with the scenarios-coverage audit, and checks state-drift. | *"wrap up"*, *"finalize"*, *"update docs"*, *"ready for review"* |
+| [`review-changes`](./skills/review-changes/SKILL.md) | 5. Review | Readability + security passes plus mechanical audits (scenarios-coverage, state-drift, traceability); block-severity findings route back. | *"review"*, *"audit"*, *"readability check"*, *"security review"* |
 
 ## Repository layout
 
@@ -69,6 +84,21 @@ Once installed, the skills will create and maintain:
 
 Location defaults above can be overridden per project; the skills auto-detect existing
 `docs/`, `specs/`, or `features/` conventions and fall back to `docs/features/`.
+
+## Contributing
+
+See [AGENTS.md](./AGENTS.md) for the full contribution workflow — `devflow` dogfoods
+itself, so new features start in the `gather-requirements` phase.
+
+Local checks before pushing:
+
+```bash
+asdf install && npm install   # first time only
+npm run check                 # skills-ref validate + mermaid.parse
+```
+
+CI runs the same checks on every push and PR via
+[`.github/workflows/ci.yml`](./.github/workflows/ci.yml).
 
 ## Status
 

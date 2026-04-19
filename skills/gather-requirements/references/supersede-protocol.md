@@ -137,7 +137,7 @@ stateDiagram-v2
     draft --> accepted: dry-run passes
     draft --> rejected: engineer rejects
     draft --> draft: amend and re-run dry-run
-    accepted --> superseded: later REQ declares supersedes:[this]
+    accepted --> superseded: later REQ supersedes this one
     rejected --> [*]
     superseded --> [*]: stays on disk as history
 ```

@@ -125,47 +125,66 @@ This repo is under active development. The planned step sequence:
 - [x] Step 5: `implement-step` skill (+ TDD loop, SOLID, pause-points)
 - [x] Step 6: `finalize-feature` skill (+ handoff checklist)
 - [x] Step 7: `review-changes` skill (+ audit machinery, readability, security, review report)
-- [ ] Step 8: CI validation + finalized README catalog
+- [x] Step 8: CI validation + finalized README catalog + CHANGELOG
 - [ ] Step 9: Dogfood on a URL-shortener sample under `examples/`
 
 Each step ends at a reviewable commit.
 
+### Pre-commit checks
+
+Before pushing, run:
+
+```bash
+npm run check        # validate-skills.sh + check-mermaid.mjs
+```
+
+CI enforces the same checks — see [`.github/workflows/ci.yml`](./.github/workflows/ci.yml).
+Node version is pinned in [`.tool-versions`](./.tool-versions) (asdf-compatible; `nvm use`
+also respects it).
+
 ### Resume note for the next session
 
-Last commit on `main`: `ff3b8c8` — `rename dev-flow → devflow`. Working tree clean.
+Last commit on `main`: `5f1bceb` — `Step 8: add CI validation, finalize README catalog, seed CHANGELOG`. Working tree clean.
 
-**Next up — Step 8: CI validation + finalized README catalog + install instructions.** Scope:
+**Next up — Step 9: Dogfood the pipeline on a URL-shortener sample under `examples/`.**
+Scope:
 
-1. **Skill metadata validation in CI.** A GitHub Actions workflow that validates every
-   `skills/*/SKILL.md` frontmatter against the [Agent Skills specification](https://agentskills.io/specification)
-   (required keys: `name`, `description`; optional: `license`, `metadata`). If `skills-ref`
-   is available on npm, use it; otherwise write a short Node or Python validator committed
-   under `scripts/` (follow the run-discipline contract). Runs on every push and PR.
-2. **Markdown link check (optional but cheap).** Lychee or markdown-link-check on every
-   `.md` in the repo. Guards against rot as references multiply.
-3. **Mermaid syntax check (optional).** `@mermaid-js/mermaid-cli --parse` over every
-   fenced `mermaid` block. Also cheap, also worth it — we have a lot of diagrams.
-4. **Finalized `README.md` catalog.** The per-skill description section with correct
-   install commands now that the rename has landed (`npx skills add ksolo/devflow`,
-   plus per-skill additions where the user wants only a subset). Link each catalog
-   entry to its `SKILL.md` for easy navigation.
-5. **`CHANGELOG.md`.** Start one — entry `0.1.0` covers Steps 1–7 and the rename.
-6. **Pre-push / pre-commit hints (optional).** A single-line note in `AGENTS.md` /
-   `CLAUDE.md` pointing at the validator command for agents to run before committing.
+1. **Create `examples/url-shortener/`.** A toy consumer repo that the skills will
+   operate *on*. It should be small enough to read in one sitting (a single
+   language, a few handlers, an in-memory or SQLite store) but real enough to
+   exercise every artifact: `requirements.md`, `plan.md`, `decisions.md`,
+   `scenarios.yml`, `.devflow/state.yml`, `.devflow/log.jsonl`.
+2. **Walk Phases 1 → 5 on a single feature.** The example feature should be modest
+   (e.g. "shorten a URL and look it up") and produce accepted requirements, a
+   plan, scenarios with real tests, passing code, a finalized handoff, and a
+   clean review report. Commit the dogfood artifacts alongside the toy code so
+   readers can see what each phase outputs.
+3. **Exercise the supersede protocol.** Add a second requirement that
+   `supersedes:` the first (e.g. "return 404 when the short code is unknown,
+   not 500"). This is the single best way to prove the requirements-as-migrations
+   contract works end-to-end; snapshots of `state.yml` before/after should diff
+   cleanly.
+4. **Exercise one hard-block audit.** Intentionally introduce a state-drift (or
+   scenarios-coverage, or traceability) violation in a throwaway branch and
+   record what `review-changes` reports. Then fix it. The goal is a worked
+   example of the failure mode, not a permanent bug.
+5. **Cross-reference from `README.md`.** A short "Try it" section linking to
+   `examples/url-shortener/` with a one-paragraph tour of what the reader will
+   find there.
 
-Step 8 does NOT add new skills or change workflow behavior. It's plumbing and
-distribution. After it lands, Step 9 dogfoods the whole pipeline on a URL-shortener
-sample under `examples/`.
+Step 9 should NOT modify any skill. If dogfooding surfaces a skill bug, open it as a
+new feature via `gather-requirements` — don't patch skills inside the example's
+commit boundary.
 
 Recommended first action for the resuming session: read this file, then
-`skills/devflow/SKILL.md`, then proceed.
+`skills/devflow/SKILL.md`, then kick off Phase 1 on the URL-shortener feature.
 
 ## Contributing
 
 1. Start a new feature with the `gather-requirements` skill (dogfood the workflow).
 2. Keep each `SKILL.md` ≤ 500 lines; push detail to `references/`.
-3. Validate skill metadata locally with `npx skills-ref validate skills/<name>` before committing
-   (CI will enforce this once Step 8 lands).
+3. Run `npm run check` before committing — it runs `skills-ref validate` on every skill
+   and parses every ` ```mermaid ` block in the repo. CI enforces the same checks.
 
 ## License
 
