@@ -144,7 +144,7 @@ also respects it).
 
 ### Resume note for the next session
 
-Last commit on `main`: `5f1bceb` — `Step 8: add CI validation, finalize README catalog, seed CHANGELOG`. Working tree clean.
+Last commit on `main`: `6944f06` — `Step 8: add CI validation, finalize README catalog, seed CHANGELOG`. Working tree clean.
 
 **Next up — Step 9: Dogfood the pipeline on a URL-shortener sample under `examples/`.**
 Scope:
