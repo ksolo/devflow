@@ -11,7 +11,7 @@ opportunity**, and be disciplined about the artifacts that generates.
 | `src/` (or repo convention) | Production code | Yes | Never — it is the deliverable |
 | `tests/` | Tests referenced by `scenarios.yml` `tests[].path` | Yes | Never |
 | ecosystem-native location OR `scripts/` | Utilities meant to stay (seed data, manual smoke, demo, migrations, tasks) | Yes | Never; documented in plan.md |
-| `tmp/` | Temporary probes, sketches, one-off REPL captures | **No** | `finalize-feature` deletes all of `tmp/` |
+| `tmp/` | Temporary probes, sketches, one-off REPL captures | **No** (contents removed; dir + `.keep` retained) | `finalize-feature` empties `tmp/` |
 
 Anything that's "I just want to see if this works" goes under `tmp/`.
 
@@ -19,11 +19,16 @@ Anything that's "I just want to see if this works" goes under `tmp/`.
 
 Rules:
 
-1. Anything under `tmp/` is considered **ephemeral**.
-2. `finalize-feature` runs `rm -rf tmp/` after confirming with the engineer.
-3. `.gitignore` does **not** ignore `tmp/` — agents check scratch in so that paused
-   sessions can resume seeing what's been tried, and so the engineer can review during
-   pause checkpoints. Finalize removes it.
+1. Anything tracked under `tmp/` is considered **ephemeral**.
+2. `finalize-feature` empties the **tracked contents** of `tmp/` after confirming with
+   the engineer, but keeps the directory itself (with a `.keep` or `.gitkeep` marker).
+   Some runtimes (Rails, Phoenix, any code that writes to `tmp/` without `mkdir -p`)
+   rely on the directory existing at startup.
+3. `.gitignore` does **not** ignore agent scratch in `tmp/` — agents check scratch in
+   so that paused sessions can resume seeing what's been tried, and so the engineer
+   can review during pause checkpoints. Finalize empties it. Runtime content the
+   framework writes to `tmp/` (caches, pids, sockets, uploads) should be gitignored
+   via the project's existing `.gitignore` entries and is not touched by finalize.
 4. Scripts under `tmp/` should start with a comment naming the scenario or step they
    relate to, so the cleanup pass can confirm nothing orphaned remains:
 
@@ -163,11 +168,14 @@ Capture the one-line output in the pause summary.
   stop and run.
 - **Running only the failing test.** Re-run the full suite before declaring
   `passing`; otherwise you may have regressed something else.
-- **Keeping `tmp/` scripts around after finalize.** They confuse future agents and
-  bloat the repo.
+- **Keeping `tmp/` scripts checked in past finalize.** They confuse future agents and
+  bloat the repo. If it's worth keeping, it has a real home.
 - **Parallel `tmp/` and kept-utility versions of the same probe.** Pick one. If it's
   worth keeping, it lives in the ecosystem-native location (or `scripts/` as
-  fallback) with documentation; if not, it stays in `tmp/` and gets deleted.
+  fallback) with documentation; if not, it stays in `tmp/` and gets emptied at
+  finalize.
+- **Removing the `tmp/` directory entirely.** Empty it and leave a marker; don't
+  delete the dir — some frameworks rely on it existing.
 - **Creating `scripts/` alongside an existing ecosystem convention.** A Rails repo
   already has `lib/tasks/`, an Alembic repo already has `alembic/versions/` — using
   them keeps the repo coherent.
