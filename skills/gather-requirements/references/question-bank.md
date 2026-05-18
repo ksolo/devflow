@@ -10,6 +10,8 @@ doesn't know, record the question under *Open Questions* in the requirements fil
 - Who asked for this, and what's the underlying pain point?
 - What happens today without it? (the baseline)
 - Why now — is there a deadline, dependency, or triggering event?
+- Is there a tracker ticket for this work (Jira / GitHub issue / Linear / etc.)? Capture the
+  id (e.g. `JIRA-1234`, `gh#456`) for the frontmatter `tracker:` field. Skip if none.
 - Is this a brand-new capability, a change to existing behavior, or a removal?
   - If a change or removal, which existing REQ-IDs does it touch?
 

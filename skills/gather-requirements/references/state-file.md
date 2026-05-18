@@ -19,29 +19,33 @@ capabilities:                        # things the system can do
   - id: <namespaced-kebab-case>      # e.g. url-shortener.create
     actors: [<actor-id>, ...]
     summary: <one-line description>
-    introduced_by: REQ-0042          # the REQ id that added it
-    last_modified_by: REQ-0042       # latest REQ that modified it
+    introduced_by: REQ-20260421T164512Z-a7f3   # the REQ id that added it
+    last_modified_by: REQ-20260421T164512Z-a7f3 # latest REQ that modified it
 
 actors:                              # who/what interacts with the system
   - id: <kebab-case>                 # e.g. end-user, visitor, admin, scheduled-job
     summary: <one-line description>
-    introduced_by: REQ-0042
-    last_modified_by: REQ-0042
+    introduced_by: REQ-20260421T164512Z-a7f3
+    last_modified_by: REQ-20260421T164512Z-a7f3
 
 rules:                               # enum-valued or structural rules
   - id: <namespaced-kebab-case>      # e.g. url-shortener.allowed-schemes
     value: <scalar or list>          # e.g. [http, https] or "kebab-case-enum-value"
-    introduced_by: REQ-0042
-    last_modified_by: REQ-0042
+    introduced_by: REQ-20260421T164512Z-a7f3
+    last_modified_by: REQ-20260421T164512Z-a7f3
 
 budgets:                             # numeric constraints (perf, availability, cost, etc.)
   - id: <namespaced-kebab-case>      # e.g. url-shortener.redirect.latency-p95
     value: 150                       # normalized to a number
     unit: ms                         # ms | s | percent | rps | bytes | count | currency
     scope: request | monthly | daily | global
-    introduced_by: REQ-0042
-    last_modified_by: REQ-0042
+    introduced_by: REQ-20260421T164512Z-a7f3
+    last_modified_by: REQ-20260421T164512Z-a7f3
 ```
+
+`introduced_by` / `last_modified_by` hold full REQ ids of the form
+`REQ-YYYYMMDDTHHMMSSZ-xxxx`. Ids are set once at draft time and never renumbered, so the
+references written here are stable forever.
 
 ### Value normalization for budgets
 
@@ -88,7 +92,7 @@ removes:
   rules: [<id>, ...]
   budgets: [<id>, ...]
 
-supersedes: [REQ-0017]      # mirrors the frontmatter; redundant by design for resilience
+supersedes: [REQ-20260302T091733Z-b1c8]   # mirrors the frontmatter; redundant by design for resilience
 ```
 
 Notes:
@@ -126,9 +130,9 @@ the **state-drift audit** in `review-changes` possible.
 
 ## Why a single repo-wide state file (not per-feature)
 
-Conflicts cross feature boundaries. A rate-limit budget introduced by REQ-0042 in
-`url-shortener` can be contradicted by REQ-0055 in `admin-panel`. A single state file is the
-only way Tier 2 conflict detection can catch that.
+Conflicts cross feature boundaries. A rate-limit budget introduced by a REQ in
+`url-shortener` can be contradicted by a later REQ in `admin-panel`. A single state file is
+the only way Tier 2 conflict detection can catch that.
 
 ## Idempotency
 

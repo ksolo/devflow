@@ -46,11 +46,17 @@ is more useful than one issue at a time.
 
 ### T1.a — frontmatter + id
 
-- `id:` matches the `REQ-NNNN` pattern (zero-padded, monotonic).
-- `id:` is greater than every id already in `log.jsonl`.
-- `id:` is not already present in any file on disk (no reuse).
+- `id:` matches the pattern `REQ-YYYYMMDDTHHMMSSZ-[0-9a-f]{4}` (UTC timestamp at draft time
+  plus a 4-character random hex suffix).
+- `id:` is not already present in any file on disk and is not in `log.jsonl` (no reuse). The
+  timestamp+suffix scheme makes collisions across branches astronomically unlikely; if one
+  does occur it is a hard failure, not an auto-retry — regenerate the draft's id.
+- `id:` is not required to be greater than prior accepted ids. Acceptance ordering is tracked
+  by `accepted_at` in `log.jsonl`, not by the ids themselves.
 - `feature:` matches the directory slug (`docs/features/<feature>/requirements.md`).
 - `status:` is `draft`.
+- `tracker:` (if present) is a non-empty string. The field may be omitted entirely when there
+  is no external ticket; the dry-run does not validate it against any external system.
 - `supersedes:` in frontmatter equals `supersedes:` in the deltas block.
 
 ### T1.b — supersedes integrity
@@ -65,12 +71,15 @@ For each id in `supersedes:`:
 ### T1.c — reference resolution
 
 Scan the draft's *Functional*, *Acceptance criteria*, and *Decision notes* sections for
-references like `REQ-XXXX`, `DEC-XXXX`, or capability/actor/rule ids:
+references matching `REQ-\d{8}T\d{6}Z-[0-9a-f]{4}`, `DEC-\d{8}T\d{6}Z-[0-9a-f]{4}`, or
+capability/actor/rule ids:
 
-- Every `REQ-XXXX` reference resolves to an existing file.
+- Every REQ-id reference resolves to an existing file.
 - Every capability/actor/rule id mentioned in the prose **also appears** in the deltas block
   (either `adds`, `modifies`, or transitively via the current `state.yml`). Otherwise the
   prose and deltas are out of sync.
+
+Tracker ids (e.g. `JIRA-1234`) are not validated here — they're external and free-form.
 
 ### T1.d — locked scenarios
 
@@ -78,7 +87,7 @@ For each existing `scenarios.yml` file in the repo, load scenario entries with
 `locked: true`.
 
 - If the draft `supersedes:` a REQ whose acceptance criteria are referenced by a locked
-  scenario (via `tags.req: [REQ-XXXX]`), the supersede is a **conflict**. The engineer
+  scenario (via `tags.req: [<REQ-id>]`), the supersede is a **conflict**. The engineer
   must either unlock the scenario via a new `gather-requirements` pass or narrow the
   draft.
 
@@ -86,9 +95,8 @@ For each existing `scenarios.yml` file in the repo, load scenario entries with
 
 Each acceptance criterion has an implicit slug derived from its text (e.g. first 6 words
 kebab-cased). If the draft's acceptance criteria produce a slug that collides with any
-`tags.req: [REQ-XXXX]` link on a scenario in another feature — flag as a likely
-duplicated criterion. This is heuristic (warning-level inside Tier 1), not a hard
-failure.
+`tags.req` link on a scenario in another feature — flag as a likely duplicated criterion.
+This is heuristic (warning-level inside Tier 1), not a hard failure.
 
 ## Tier 2 — declarative state checks
 
@@ -141,29 +149,36 @@ After applying the draft's deltas, walk the resulting state:
 On any hard failure (from either tier), emit a report in this format and **stop**:
 
 ```
-CONFLICT REPORT for REQ-0042 (feature: url-shortener)
+CONFLICT REPORT for REQ-20260421T164512Z-a7f3 (feature: url-shortener, tracker: JIRA-1234)
 
 Tier 1 failures (2):
   T1.b supersedes integrity:
-    REQ-0017 in `supersedes:` has status=superseded, superseded_by=REQ-0031.
-    Cannot supersede something already superseded. Fix: target REQ-0031 instead.
+    REQ-20260302T091733Z-b1c8 (tracker JIRA-0987) in `supersedes:` has
+    status=superseded, superseded_by=REQ-20260401T120005Z-e24d.
+    Cannot supersede something already superseded.
+    Fix: target REQ-20260401T120005Z-e24d instead.
 
   T1.d locked scenarios:
     docs/features/auth/scenarios.yml has locked: true on id=valid-login
-    (tags.req: [REQ-0017]). Superseding REQ-0017 would invalidate a locked
-    scenario.
+    (tags.req: [REQ-20260302T091733Z-b1c8]). Superseding that REQ would
+    invalidate a locked scenario.
 
 Tier 2 failures (1):
   T2.c budget conflict:
-    budget 'url-shortener.redirect.latency-p95' exists with value=200ms (from REQ-0031).
-    Draft writes value=100ms without superseding REQ-0031.
-    Fix: add REQ-0031 to 'supersedes:' OR choose a non-conflicting value.
+    budget 'url-shortener.redirect.latency-p95' exists with value=200ms
+    (from REQ-20260401T120005Z-e24d, tracker JIRA-1102).
+    Draft writes value=100ms without superseding that REQ.
+    Fix: add REQ-20260401T120005Z-e24d to 'supersedes:' OR choose a
+    non-conflicting value.
 
 Resolution paths:
   (a) amend the draft to address the issues above
-  (b) supersede the prior REQs listed: [REQ-0031]
+  (b) supersede the prior REQs listed: [REQ-20260401T120005Z-e24d]
   (c) reject the draft (set status: rejected and stop)
 ```
+
+Include `tracker:` values in the report when available — they are the ids humans will use to
+pull up the conflicting work in Jira/GitHub/etc.
 
 Present this report verbatim to the engineer, ask which resolution path to take, and re-run
 the dry-run after changes. Do not attempt to auto-fix.

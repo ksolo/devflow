@@ -8,18 +8,19 @@ reads them.
 
 ````markdown
 ---
-id: REQ-0042
+id: REQ-20260421T164512Z-a7f3     # REQ-YYYYMMDDTHHMMSSZ-<4-hex>, set once at draft time
 feature: url-shortener
 title: Shorten a long URL and redirect on visit
-status: draft                 # draft | accepted | superseded | rejected
-created_at: 2026-04-16T16:00:00Z
-accepted_at: null             # set on acceptance
+status: draft                     # draft | accepted | superseded | rejected
+created_at: 2026-04-21T16:45:12Z
+accepted_at: null                 # set on acceptance
 author: kevin
-supersedes: []                # e.g. [REQ-0017]
-superseded_by: null           # set when a later REQ replaces this one
+tracker: JIRA-1234                # optional; external ticket id. Omit the field entirely if none.
+supersedes: []                    # e.g. [REQ-20260302T091733Z-b1c8]
+superseded_by: null               # set when a later REQ replaces this one
 ---
 
-# REQ-0042 — Shorten a long URL and redirect on visit
+# REQ-20260421T164512Z-a7f3 — Shorten a long URL and redirect on visit
 
 ## Context
 
@@ -142,6 +143,10 @@ supersedes: []
 
 - **Keep the human-readable section conversational.** It's for humans reading the repo a year
   from now. Prefer prose over bullet soup where it's clearer.
+- **Reference by `tracker:` in conversation, by `id:` in docs.** The REQ id is the canonical
+  machine handle (stable, unique, used by `supersedes:`, `log.jsonl`, cross-references). The
+  tracker id is the human handle (`JIRA-1234`) people actually say out loud. Both are fine;
+  just know which is which.
 - **The `deltas:` block is a contract**, not prose. Every capability / actor / rule / budget
   named here lands in `.devflow/state.yml` on acceptance. Typos here create drift.
 - **Every acceptance criterion should have a matching functional requirement**, but not the

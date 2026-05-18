@@ -1,7 +1,7 @@
 # Supersede protocol
 
 Accepted requirements are **immutable** in v1. The only legal way to change prior behavior is
-a new requirement that explicitly declares `supersedes: [REQ-xxxx]`.
+a new requirement that explicitly declares `supersedes: [<REQ-id>]`.
 
 This file codifies the rule, the conflict report format, and the three resolution paths.
 
@@ -11,7 +11,7 @@ Migrations-for-requirements only works if the acceptance log is a linear history
 Once you allow in-place edits, you lose:
 
 - **Determinism.** `state.yml` can no longer be rebuilt from the log.
-- **Traceability.** Scenarios linked via `tags.req: [REQ-0017]` would silently mean something
+- **Traceability.** Scenarios linked via `tags.req: [<REQ-id>]` would silently mean something
   different depending on when you read them.
 - **Conflict detection.** Tier 1 reference resolution stops meaning anything if the target
   can shift under you.
@@ -28,7 +28,7 @@ Once a requirement's frontmatter has `status: accepted`:
 - Its frontmatter is frozen **except for these two fields**, which are set by tooling when a
   later REQ supersedes it:
   - `status:` may change `accepted` → `superseded`
-  - `superseded_by:` may change `null` → `REQ-xxxx`
+  - `superseded_by:` may change `null` → the superseding REQ id
 
 Any other edit to an accepted requirement file is a **state-drift violation** and will be
 caught by the `review-changes` audit.
@@ -52,8 +52,9 @@ accepted yet.
 
 Accept that the new draft replaces prior behavior. Add the conflicting REQ ids to both:
 
-- Frontmatter `supersedes: [REQ-0017, REQ-0031]`
-- Deltas block `supersedes: [REQ-0017, REQ-0031]` (must match exactly)
+- Frontmatter `supersedes: [REQ-20260302T091733Z-b1c8, REQ-20260401T120005Z-e24d]`
+- Deltas block `supersedes: [REQ-20260302T091733Z-b1c8, REQ-20260401T120005Z-e24d]` (must
+  match exactly)
 
 Then fill the **Supersedes** section of the draft with:
 
@@ -80,7 +81,7 @@ Emitted by the dry-run. Reproduced here for reference — see
 [`conflict-detection.md`](conflict-detection.md#conflict-report) for the generator.
 
 ```
-CONFLICT REPORT for REQ-<new-id> (feature: <slug>)
+CONFLICT REPORT for <REQ-id> (feature: <slug>[, tracker: <tracker-id>])
 
 Tier 1 failures (<count>):
   T1.<letter> <check name>:
@@ -94,7 +95,7 @@ Tier 2 failures (<count>):
 
 Resolution paths:
   (a) amend the draft to address the issues above
-  (b) supersede the prior REQs listed: [REQ-xxxx, ...]
+  (b) supersede the prior REQs listed: [<REQ-id>, ...]
   (c) reject the draft (set status: rejected and stop)
 ```
 
@@ -113,18 +114,21 @@ Authoring a supersede looks like authoring any other requirement, with these add
    ```markdown
    ## Supersedes
 
-   Supersedes **REQ-0017** (accepted 2026-03-02).
+   Supersedes **REQ-20260302T091733Z-b1c8** (tracker JIRA-0987, accepted 2026-03-02).
 
    | Change type | What | Why |
    |---|---|---|
-   | modified budget | p95 latency 200ms → 100ms | upstream SLA tightened; see DEC-0009 |
-   | removed actor | `legacy-admin` | replaced by RBAC in REQ-0034 |
+   | modified budget | p95 latency 200ms → 100ms | upstream SLA tightened; see DEC-20260410T143022Z-c19e |
+   | removed actor | `legacy-admin` | replaced by RBAC in REQ-20260415T101200Z-7f2a |
    | removed capability | `auth.basic-login` | force-upgrading to SSO |
 
    Dependent REQs:
-   - REQ-0023 (still valid; capability it depends on is preserved)
-   - REQ-0031 (will need updating in a separate REQ; flagged as follow-up)
+   - REQ-20260318T142011Z-9b0d (still valid; capability it depends on is preserved)
+   - REQ-20260401T120005Z-e24d (will need updating in a separate REQ; flagged as follow-up)
    ```
+
+   Reference the tracker id alongside the REQ id when citing a prior requirement in prose —
+   humans find `JIRA-0987` easier to look up than the timestamp id.
 
 4. **Run the dry-run**. If downstream REQs are broken (T2.d dependency graph), expect a
    second round of conflicts that you may need to supersede in turn — or narrow this REQ.

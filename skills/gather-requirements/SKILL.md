@@ -1,6 +1,6 @@
 ---
 name: gather-requirements
-description: Conduct a conversational Q&A to capture requirements for a feature or change, then dry-run the draft against prior accepted requirements to detect conflicts before acceptance. Use when the user mentions "new feature", "change request", "requirements", "spec this out", "what do you want", "what are we building", "let's figure out what this needs", "supersede", "replace the old requirement", or is about to start non-trivial work without a requirements doc. Produces a monotonically-numbered, immutable requirement file with a machine-readable deltas block, runs structural and declarative-state conflict checks, and either accepts (folding into .devflow/state.yml) or reports conflicts with resolution paths.
+description: Conduct a conversational Q&A to capture requirements for a feature or change, then dry-run the draft against prior accepted requirements to detect conflicts before acceptance. Use when the user mentions "new feature", "change request", "requirements", "spec this out", "what do you want", "what are we building", "let's figure out what this needs", "supersede", "replace the old requirement", or is about to start non-trivial work without a requirements doc. Produces a time-ordered, globally-unique, immutable requirement file with a machine-readable deltas block, runs structural and declarative-state conflict checks, and either accepts (folding into .devflow/state.yml) or reports conflicts with resolution paths.
 license: MIT
 metadata:
   author: Kevin Solorio
@@ -11,15 +11,15 @@ metadata:
 # gather-requirements — Phase 1
 
 Your job is to turn a fuzzy ask into an **accepted, immutable requirement** that the rest of
-the workflow can rely on. Requirements are treated like database migrations: monotonically
-numbered, immutable once accepted, supersede-only.
+the workflow can rely on. Requirements are treated like database migrations: time-ordered
+IDs allocated at draft time, immutable once accepted, supersede-only.
 
 ## Golden rules
 
 1. **Ask before assuming.** When anything is ambiguous, stop and ask — one or two focused
    questions at a time, not a wall of bullets.
 2. **Accepted requirements are immutable.** Never edit `status: accepted` files in place. Any
-   change in intent requires a **new** requirement file with `supersedes: [REQ-xxxx]`.
+   change in intent requires a **new** requirement file with `supersedes: [<prior-REQ-id>]`.
 3. **No code in this phase.** Only artifacts: the requirement file and updates to
    `.devflow/state.yml` / `.devflow/log.jsonl`.
 4. **Conflict before accept.** Every draft runs through the dry-run before acceptance. See
@@ -72,12 +72,43 @@ this order, skipping categories that are clearly settled:
 Ask one or two questions at a time. Summarize back after each cluster to check alignment.
 **Never invent answers**; if the engineer doesn't know, record it under *Open Questions*.
 
-### 3. Allocate the monotonic ID
+### 3. Allocate the ID
 
-Look in `docs/features/*/requirements.md` (or wherever the repo stores them — auto-detect as
-per orchestrator rules) for the highest `id:` in YAML frontmatter. The next ID is that number
-+ 1, zero-padded to 4 digits (`REQ-0042`). IDs are **global across features**, not per-feature
-— this matters because conflicts cross feature boundaries.
+Generate the ID at **draft-creation time** from the current UTC timestamp plus a 4-character
+random hex suffix:
+
+```
+REQ-YYYYMMDDTHHMMSSZ-xxxx
+```
+
+Example: `REQ-20260421T164512Z-a7f3`.
+
+This scheme is collision-free across parallel engineer branches — two engineers drafting
+requirements on separate branches from `main` will not clash, because the timestamp (and
+random suffix, in the rare same-second case) guarantees uniqueness without coordination. The
+ID is set once at draft creation and never changes, even if the draft is edited across
+multiple days or rebased.
+
+IDs are **global across features**, not per-feature — this matters because conflicts cross
+feature boundaries.
+
+Acceptance ordering is determined by append order in `.devflow/log.jsonl` (via `accepted_at`),
+not by the timestamp embedded in the ID. It is fine — and expected — for an older-looking ID
+to be accepted after a newer-looking one (drafted Monday, accepted Thursday).
+
+### 3a. Record the tracker reference (optional)
+
+If the work is tracked in an external system (Jira, GitHub Issues, Linear, etc.), capture the
+ticket identifier in the frontmatter `tracker:` field:
+
+```yaml
+tracker: JIRA-1234     # or gh#456, LIN-789, etc.
+```
+
+This is the handle humans will actually use in conversation and PRs. Leave the field omitted
+(not empty) if there's no external ticket — internal polish, tech debt, ad-hoc work. Ask for
+it during the Context category of the Q&A (see
+[`references/question-bank.md`](references/question-bank.md)).
 
 ### 4. Fill the template
 
@@ -106,7 +137,7 @@ it to the engineer with the three resolution paths.
 - **Amend draft** — fix the draft, re-run dry-run.
 - **Supersede prior** — add the conflicting prior IDs to `supersedes:` (with justification in
   *Decision Notes* of the new draft), re-run dry-run. The prior requirements stay on disk as
-  history; they are now `status: superseded` and `superseded_by: REQ-xxxx`.
+  history; they are now `status: superseded` and `superseded_by: <new-REQ-id>`.
 - **Reject draft** — user decides not to proceed. Keep the draft file with `status: rejected`
   and a note, or delete it (user's call).
 
@@ -117,7 +148,7 @@ If dry-run passes:
    [`references/state-file.md`](references/state-file.md)). Commit the regenerated file.
 3. Append a line to `.devflow/log.jsonl`:
    ```json
-   {"id":"REQ-0042","accepted_at":"2026-04-16T16:45:00Z","feature":"url-shortener","supersedes":[]}
+   {"id":"REQ-20260421T164512Z-a7f3","accepted_at":"2026-04-21T17:02:11Z","feature":"url-shortener","tracker":"JIRA-1234","supersedes":[]}
    ```
 4. Update `.devflow/session.yml`: `phase: create-plan`.
 5. Hand off to the `create-plan` skill with a one-line summary.
@@ -126,8 +157,11 @@ If dry-run passes:
 
 When done, say exactly:
 
-> Requirement **REQ-0042** (`url-shortener`) accepted. State file updated (+3 capabilities,
-> 1 budget). No conflicts. Handing off to `create-plan` for step breakdown.
+> Requirement **REQ-20260421T164512Z-a7f3** (`url-shortener`, tracker `JIRA-1234`) accepted.
+> State file updated (+3 capabilities, 1 budget). No conflicts. Handing off to `create-plan`
+> for step breakdown.
+
+If there is no tracker, omit that clause.
 
 Then stop. Do **not** start planning in this skill — that's Phase 2.
 
@@ -136,13 +170,17 @@ Then stop. Do **not** start planning in this skill — that's Phase 2.
 If during the Q&A the engineer says something that contradicts an accepted requirement, do
 **not** silently override it. Say:
 
-> "That conflicts with REQ-0017 (accepted 2026-03-02) which says X. We can either: (a) keep
-> REQ-0017 as-is and narrow the new requirement to not conflict, or (b) supersede REQ-0017
-> with a new requirement that replaces it. Which do you want?"
+> "That conflicts with REQ-20260302T091733Z-b1c8 (tracker JIRA-0987, accepted 2026-03-02)
+> which says X. We can either: (a) keep it as-is and narrow the new requirement to not
+> conflict, or (b) supersede it with a new requirement that replaces it. Which do you want?"
 
-If (b), the new requirement's frontmatter carries `supersedes: [REQ-0017]` and its *Decision
-Notes* section explains why. The dry-run will still run and may surface *further* conflicts
-(because REQ-0017 may itself have been depended on by REQ-0023).
+Prefer referencing the tracker id (`JIRA-0987`) in conversation; the REQ id is the canonical
+machine handle but is awkward to speak.
+
+If (b), the new requirement's frontmatter carries
+`supersedes: [REQ-20260302T091733Z-b1c8]` and its *Decision Notes* section explains why. The
+dry-run will still run and may surface *further* conflicts (because the superseded REQ may
+itself have been depended on by a later REQ).
 
 ## What this skill does NOT do
 
